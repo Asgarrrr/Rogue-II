@@ -1,47 +1,78 @@
+import * as ROT from "rot-js";
+import Tile from "./tile";
+import Trap from "./trap";
 
-import { Display, Engine, Scheduler, Map, RNG } from "rot-js";
+class Map {
+    tiles = {};
 
-export default class _Map {
+    constructor() {
+        var digger = new ROT.Map.Digger(20, 20);
 
-    constructor(
-        display, width, height, roomWidth, roomHeight, roomDugPercentage, timeLimit,
-    ) {
+        let width = 0;
+        let height = 0;
 
-        this._display           = display;
-        this._width             = width;
-        this._height            = height;
-        this._roomWidth         = roomWidth;
-        this._roomHeight        = roomHeight;
-        this._roomDugPercentage = roomDugPercentage;
-        this._timeLimit         = timeLimit;
+        digger.create( ( x, y, wall ) => {
 
-        this._map = new Map.Uniform(
-            width, height, roomWidth, roomHeight, roomDugPercentage, timeLimit,
-        );
+            if ( wall )
+                return;
 
-        this._map.create( ( x, y, wall ) => {
-            console.log(x, y, wall);
-            this._display.draw(x, y, wall ? "#" : ".");
+            width   = Math.max( width, x );
+            height  = Math.max( height, y );
+
+            this.tiles[ `${x},${y}` ] = new Tile( 9, 0, x * 16, y * 16 );
+
         });
+        console.log(this.tiles);
 
+        for (let x = 0; x <= width + 1; x++) {
+            for (let y = 0; y <= height + 1; y++) {
+                const id = `${x},${y}`;
+                if (!this.tiles[id]) {
+                    // right
+                    let placeTile = false;
+
+                    if (
+                        this.tiles[`${x + 1},${y}`] &&
+                        !this.tiles[`${x + 1},${y}`].blocking
+                    ) {
+                        this.tiles[id] = new Tile(0, 0, x * 16, y * 16, true);
+                    }
+                    // left
+                    if (
+                        this.tiles[`${x - 1},${y}`] &&
+                        !this.tiles[`${x - 1},${y}`].blocking
+                    ) {
+                        this.tiles[id] = new Tile(5, 0, x * 16, y * 16, true);
+                    }
+                    // down
+                    if (
+                        this.tiles[`${x},${y + 1}`] &&
+                        !this.tiles[`${x},${y + 1}`].blocking
+                    ) {
+                        this.tiles[id] = new Tile(1, 0, x * 16, y * 16, true);
+                    }
+                    // up
+                    if (
+                        this.tiles[`${x},${y - 1}`] &&
+                        !this.tiles[`${x},${y - 1}`].blocking
+                    ) {
+                        this.tiles[id] = new Tile(1, 4, x * 16, y * 16, true);
+                    }
+
+                    if (placeTile) {
+                        // this.tiles[id] = new Tile(1, 0, x * 16, y * 16, true);
+                    }
+                }
+            }
+        }
+
+        this.tiles["0,1"] = new Trap(0, 0, 0, 0);
+        this.tiles["0,1"] = new Trap(0, 0, 0, 0);
     }
 
-    load( map ) {
-
-        this._map = map;
-
+    getTileAt(x, y) {
+        return this.tiles[`${x},${y}`];
     }
-
-
-    export() {
-
-        return this._map;
-
-    }
-
-
-
-
-
-
 }
+
+export default Map;
