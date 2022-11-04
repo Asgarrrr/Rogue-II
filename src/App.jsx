@@ -1,18 +1,17 @@
 import {
-    useState
+    useState, useEffect
 } from 'react'
-import reactLogo from './assets/react.svg'
 import './App.css'
 import "rot-js"
-import Game from "./components/Game"
+import Game from "./class/game";
+import "./App.css"
 
 function App() {
-    const [count, setCount] = useState(0)
+
+    useEffect(() => { Game.init(); }, [])
 
     return (
-        <div className="App">
-            <Game/>
-        </div>
+        <div id="app"></div>
     )
 }
 
