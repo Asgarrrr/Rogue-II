@@ -5,12 +5,13 @@ import {
 
 class Tile {
 
-    constructor(sx, sy, x, y, blocking = false) {
+    constructor(sx, sy, x, y, blocking = false, subTiles = false ) {
         this.sx = sx;
         this.sy = sy;
         this.x = x;
         this.y = y;
         this.blocking = blocking;
+        this.subTiles = subTiles
     }
 
     render() {
