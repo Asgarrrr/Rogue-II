@@ -8,12 +8,14 @@ import game from "./game";
 class Entity {
 
     constructor( sx, sy, x, y, map ) {
+
         this.sx = sx;
         this.sy = sy;
         this.x = x;
         this.y = y;
         this.turn = false;
         this.map = map;
+        this.direction;
 
         this.gridX = parseInt(x / 16);
         this.gridY = parseInt(y / 16);
@@ -29,7 +31,8 @@ class Entity {
         Renderer.render(
             AssetManager.getSpriteImage( "entities", this.sx + this.lastFrame, this.sy ),
             this.x,
-            this.y
+            this.y,
+            this.direction
         );
 
         if ( this.lastUpdate + 200 < Date.now() ) {
@@ -44,8 +47,6 @@ class Entity {
     }
 
     async act() {
-
-        console.log( this )
 
         game.engine.lock();
         if (this.type === "player") {
@@ -94,6 +95,14 @@ class Entity {
             case "down":
                 newGridY++;
                 break;
+        }
+
+        if (
+            game.map.tiles[`door_${newGridX},${newGridY}`] &&
+            game.map.tiles[`door_${newGridX},${newGridY}`].blocking
+        ) {
+            game.map.tiles[`door_${newGridX},${newGridY}`].open();
+            result = true;
         }
 
         if (
