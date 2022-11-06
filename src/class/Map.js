@@ -10,7 +10,7 @@ class Map {
 
     constructor() {
 
-        this.digger = new ROT.Map.Digger( 20, 20 );
+        this.digger = new ROT.Map.Digger( 40, 40 );
 
         let width   = 0;
         let height  = 0;

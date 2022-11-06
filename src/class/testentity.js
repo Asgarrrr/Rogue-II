@@ -6,8 +6,8 @@ import {
 import Entity from "./entity";
 
 class TestEntity extends Entity {
-    constructor(x, y) {
-        super(0, 0, x, y);
+    constructor(sx, sy, x, y) {
+        super(sx, sy, x, y);
     }
 
     update() {
