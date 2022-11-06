@@ -22,8 +22,8 @@ class Game {
         this.entities = [];
         this.tiles = [];
         this.map = null;
-        this.render = this.render.bind(this);
-        this.update = this.update.bind(this);
+        this.render = this.render.bind( this );
+        this.update = this.update.bind( this );
         this.engine = null;
     }
 
@@ -41,12 +41,13 @@ class Game {
 
         // Create a new player entity
         const player = new Player();
-        const tile = Object.values( this.map.tiles )[0];
+        this.player = player;
+        const tile = Object.values( this.map.tiles )[ 0 ];
         player.x = tile.x;
-        player.gridX = parseInt(tile.x / 16);
+        player.gridX = parseInt( tile.x / 16 );
         player.y = tile.y;
-        player.gridY = parseInt(tile.y / 16);
-        this.entities.push(player);
+        player.gridY = parseInt( tile.y / 16 );
+        this.entities.push( player );
 
         for ( let i = 0; i < 5; i++ ) {
 
@@ -57,11 +58,10 @@ class Game {
             const { _x1, _x2, _y1, _y2 } = room;
 
             // TODO: Check if the tile is walkable
-
             entity.x = ~~( Math.random() * ( _x2 - _x1 ) + _x1 ) * 16;
-            entity.gridX = parseInt(entity.x / 16);
+            entity.gridX = parseInt( entity.x / 16 );
             entity.y = ~~( Math.random() * ( _y2 - _y1 ) + _y1 ) * 16;
-            entity.gridY = parseInt(entity.y / 16);
+            entity.gridY = parseInt( entity.y / 16 );
             this.entities.push( entity );
 
         }
@@ -96,9 +96,27 @@ class Game {
 
     render() {
 
-        Object.values( this.map.tiles ).filter( ( x ) => !x.subTiles && x.render() );
-        Object.values( this.map.tiles ).filter( ( x ) =>  x.subTiles && x.render() );
-        this.entities.forEach( ( entity ) => entity.render( ) );
+        const FOV = new ROT.FOV.PreciseShadowcasting( ( x, y ) =>
+            this.map.getTileAt( x, y )?.some( ( tile ) => tile.blocking ) ? 0 : 1
+        );
+
+        const visible = { };
+
+        FOV.compute( this.player.gridX, this.player.gridY, 10, ( x, y ) => {
+            visible[ `${ x },${ y }` ] = true;
+        });
+
+        // Render hard structures
+        for ( const tile of ( Object.values( this.map.tiles ).filter( ( tile ) => !tile.subTiles ) ) )
+            tile.render( visible[ `${ tile.x / 16 },${ tile.y / 16 }` ] | 0 )
+
+        // Render sub-tiles
+        for ( const tile of ( Object.values( this.map.tiles ).filter( ( tile ) => tile.subTiles ) ) )
+            tile.render( visible[ `${ tile.x / 16 },${ tile.y / 16 }` ] | 0 )
+
+        // Render entities
+        for ( const entity of this.entities )
+            entity.render( visible[ `${entity.gridX},${entity.gridY}` ] | 0 );
 
     }
 }
