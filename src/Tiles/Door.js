@@ -18,16 +18,6 @@ export default class Door extends Tile {
 
     }
 
-    render() {
-
-        Renderer.render(
-            AssetManager.getSpriteImage("sprites", this.sx, this.sy ),
-            this.x,
-            this.y
-        );
-
-    }
-
     open() {
 
         if ( this.sx === 6 && this.sy === 3 )
