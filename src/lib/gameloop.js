@@ -46,14 +46,13 @@ class GameLoop {
 
         this.accumulator += this.dt;
 
-        while (this.accumulator >= this.delta) {
+        while ( this.accumulator >= this.delta ) {
             this.update(this.step);
             this.accumulator -= this.delta;
         }
 
         this.clear();
         this.render();
-
 
     }
 
