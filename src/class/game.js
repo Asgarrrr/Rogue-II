@@ -27,7 +27,7 @@ class Game {
         this.engine = null;
     }
 
-    async init() {
+    async init( ) {
 
         Renderer.createDisplay( 512, 288 );
         await this.loadAssets();
@@ -118,7 +118,43 @@ class Game {
         for ( const entity of this.entities )
             entity.render( visible[ `${entity.gridX},${entity.gridY}` ] | 0 );
 
+        const w = Renderer.display.context.canvas.width;
+        const h = Renderer.display.context.canvas.height;
+
+        for ( const tile of ( Object.values( this.map.tiles ).filter( ( tile ) => !tile.subTiles ) ) )
+            if( tile.blocking ) {
+
+                if ( tile.alreadyRendered ) {
+
+                    Renderer.display.context.fillStyle = "grey";
+                    Renderer.display.context.globalAlpha = 0.6;
+                    Renderer.display.context.fillRect( w - 128 + tile.x / 16, h - 128 + tile.y / 16, 1, 1 );
+                    Renderer.display.context.globalAlpha = 1;
+
+                }
+
+            }
+
+
+        Renderer.display.context.fillStyle = "green";
+
+        for ( const tile of ( Object.values( this.map.tiles ).filter( ( tile ) => tile.subTiles ) ) )
+            if( tile.blocking && visible[ `${ tile.x / 16 },${ tile.y / 16 }` ] )
+                Renderer.display.context.fillRect( w - 128 + tile.x / 16, h - 128 + tile.y / 16, 1, 1 );
+
+        Renderer.display.context.fillStyle = "blue";
+
+        for ( const entity of this.entities )
+            if( visible[ `${ entity.x / 16 },${ entity.y / 16 }` ] )
+                Renderer.display.context.fillRect( w - 128 + entity.gridX, h - 128 + entity.gridY, 1, 1 );
+
+        Renderer.display.context.fillStyle = "yellow";
+
+        Renderer.display.context.fillRect( w - 128 + this.player.gridX, h - 128 + this.player.gridY, 1, 1 );
+
+
     }
+
 }
 
 export default new Game();
