@@ -17,22 +17,26 @@ class Entity {
         this.map = map;
         this.direction;
 
-        this.gridX = parseInt(x / 16);
-        this.gridY = parseInt(y / 16);
+        this.gridX = parseInt( x / 16 );
+        this.gridY = parseInt( y / 16 );
 
         this.lastFrame = 0;
-        this.frames = AssetManager.getSpriteImage("entities", this.sx, this.sy).width / 16;
+        this.frames = AssetManager.getSpriteImage( "entities", this.sx, this.sy ).width / 16;
         this.lastUpdate = 0;
 
     }
 
-    render() {
+    render( state = 0 ) {
+
+        if ( !state )
+            return;
 
         Renderer.render(
             AssetManager.getSpriteImage( "entities", this.sx + this.lastFrame, this.sy ),
             this.x,
             this.y,
-            this.direction
+            this.direction,
+            state == 1 ? 2 : 1
         );
 
         if ( this.lastUpdate + 200 < Date.now() ) {
@@ -49,34 +53,33 @@ class Entity {
     async act() {
 
         game.engine.lock();
-        if (this.type === "player") {
-            setTimeout(() => {
-                this.turn = true;
-            }, 120);
-        } else {
-            this.turn = true;
-        }
+        this.type === "player" ? setTimeout( ( ) => ( this.turn = true ), 120 ) : ( this.turn = true );
+
     }
 
     turnDone() {
+
         this.turn = false;
         game.engine.unlock();
+
     }
 
-    update(delta) {
+    update( delta ) {
+
         const speed = 2;
-        if (this.gridX * 16 > this.x) {
+
+        if ( this.gridX * 16 > this.x )
             this.x += speed;
-        } else if (this.gridX * 16 < this.x) {
+        else if ( this.gridX * 16 < this.x )
             this.x -= speed;
-        } else if (this.gridY * 16 > this.y) {
+        else if ( this.gridY * 16 > this.y )
             this.y += speed;
-        } else if (this.gridY * 16 < this.y) {
+        else if ( this.gridY * 16 < this.y )
             this.y -= speed;
-        }
+
     }
 
-    move(direction) {
+    move( direction ) {
 
         let result = false;
         let newGridX = this.gridX;
@@ -97,17 +100,13 @@ class Entity {
                 break;
         }
 
-        if (
-            game.map.tiles[`door_${newGridX},${newGridY}`] &&
-            game.map.tiles[`door_${newGridX},${newGridY}`].blocking
-        ) {
+        if ( game.map.tiles[ `door_${newGridX},${newGridY}` ]?.blocking ) {
             game.map.tiles[`door_${newGridX},${newGridY}`].open();
             result = true;
         }
 
         if (
-            game.map.tiles[`${newGridX},${newGridY}`] &&
-            !game.map.tiles[`${newGridX},${newGridY}`].blocking
+            !game.map.tiles[`${newGridX},${newGridY}`]?.blocking
         ) {
             this.gridX = newGridX;
             this.gridY = newGridY;
