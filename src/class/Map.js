@@ -5,17 +5,22 @@ import GroundTile from "./groundtile";
 import Door from "../Tiles/Door";
 
 class Map {
+
     tiles = {};
 
     constructor() {
-        this.digger = new ROT.Map.Digger(20, 20);
 
-        let width = 0;
-        let height = 0;
-        let data = [];
+        this.digger = new ROT.Map.Digger( 20, 20 );
+
+        let width   = 0;
+        let height  = 0;
+
+        this.data   = [];
+        this.tiles  = {};
+
         this.digger.create( ( x, y, wall ) => {
 
-            data[x+","+y] = wall;
+            this.data[ `${x},${y}` ] = wall;
 
             if ( wall )
                 return;
@@ -111,17 +116,35 @@ class Map {
 
         for( const door of this.getDoors() ) {
 
-            if( this.getTileAt( door[0] + 1, door[1] ).blocking && this.getTileAt( door[0] - 1, door[1] ).blocking )
+            if( this.getTileAt( door[0] + 1, door[1] )?.[0]?.blocking && this.getTileAt( door[0] - 1, door[1] )?.[0]?.blocking )
                 this.tiles[ `door_${ door[0] },${ door[1] }` ] = new Door( 6, 3, door[0] * 16, ( door[1] * 16 ), true, true );
 
-            if( this.getTileAt( door[0], door[1] + 1 ).blocking && this.getTileAt( door[0], door[1] - 1 ).blocking )
-                this.tiles[ `door_${ door[0] },${ door[1] }` ] = new Door( 6, 4, door[0] * 16, ( door[1] * 16 ), true, false );
+            if( this.getTileAt( door[0], door[1] + 1 )?.[0]?.blocking && this.getTileAt( door[0], door[1] - 1 )?.[0]?.blocking )
+                this.tiles[ `door_${ door[0] },${ door[1] }` ] = new Door( 6, 4, door[0] * 16, ( door[1] * 16 ), true, true )
+        }
+
+        for( const { _x1, _x2, _y1, _y2 } of this.getRooms() ) {
+
+            // Random coordinates in the room
+            const x = Math.floor( Math.random() * ( _x2 - _x1 ) ) + _x1;
+            const y = Math.floor( Math.random() * ( _y2 - _y1 ) ) + _y1;
+
+            const tile = this.getTileAt( x, y );
+
+            if( !tile )
+                continue;
+
+            if( Math.random() > 0.5 )
+                this.tiles[ `rock_${ x },${ y }` ] = new Tile( 8, 6, x * 16, ( y * 16 ), false, true );
 
         }
+
     }
 
-    getTileAt(x, y) {
-        return this.tiles[`${x},${y}`];
+    getTileAt( x, y ) {
+
+        return Object.values( this.tiles ).filter( ( tile ) => tile.x === x * 16 && tile.y === y * 16 );
+
     }
 
     getDoors() {
