@@ -51,8 +51,18 @@ class GameLoop {
             this.accumulator -= this.delta;
         }
 
+        const time = new Date();
+
         this.clear();
         this.render();
+
+        const renderTime = new Date() - time;
+
+
+        Renderer.display.context.fillStyle = "white";
+        Renderer.display.context.font = "12px monospace";
+        Renderer.display.context.fillText( `FPS: ${ Math.round( 1e3 / this.dt ) }`, 10, 12 );
+        Renderer.display.context.fillText( `Render Time: ${ renderTime } ms`, 10, 24 );
 
     }
 
