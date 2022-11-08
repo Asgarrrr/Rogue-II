@@ -1,16 +1,14 @@
 import * as ROT from "rot-js";
 import Tile from "./tile";
-import Trap from "./trap";
-import GroundTile from "./groundtile";
 import Door from "../Tiles/Door";
 
 class Map {
 
-    tiles = {};
-
     constructor() {
 
-        this.digger = new ROT.Map.Digger( 40, 40 );
+        console.time( "Map Generation" );
+
+        this.digger = new ROT.Map.Digger( 80, 80 );
 
         let width   = 0;
         let height  = 0;
@@ -20,7 +18,7 @@ class Map {
 
         this.digger.create( ( x, y, wall ) => {
 
-            this.data[ `${x},${y}` ] = wall;
+            this.data[ `${ x },${ y }` ] = wall;
 
             if ( wall )
                 return;
@@ -28,43 +26,41 @@ class Map {
             width   = Math.max( width, x );
             height  = Math.max( height, y );
 
-            this.tiles[ `${x},${y}` ] = new Tile( 9, 0, x * 16, y * 16 );
+            const floor = [
+                [ 6, 0 ], [ 6, 1 ], [ 6, 2 ],
+                [ 7, 0 ], [ 7, 1 ], [ 7, 2 ],
+                [ 8, 0 ], [ 8, 1 ], [ 8, 2 ],
+                [ 9, 0 ], [ 9, 1 ], [ 9, 2 ],
+            ][ ~~( Math.random() * 12 ) ];
+
+            this.tiles[ `${ x },${ y }` ] = new Tile( ...floor, x * 16, y * 16 );
 
         });
 
         for ( let x = 0; x <= width + 1; x++ ) {
             for ( let y = 0; y <= height + 1; y++ ) {
 
-                const id = `${x},${y}`;
+                const id = `${ x },${ y }`;
 
-                if ( !this.tiles[ id ]) {
+                if ( this.tiles[ id ] )
+                    continue;
 
-                    // Left
-                    if ( this.tiles[`${x + 1},${y}`] && !this.tiles[`${x + 1},${y}`].blocking ) {
-                        const selected = [ [ 0, 0 ], [ 0, 1 ], [ 0, 2 ], [ 0, 3 ] ][ Math.floor( Math.random() * 4 ) ];
-                        this.tiles[id] = new Tile( ...selected, x * 16, y * 16, true );
-                    }
+                    if ( this.tiles[ `${ x + 1 },${ y }`] && !this.tiles[ `${ x + 1 },${ y }`].blocking )
+                        this.tiles[ id ] = new Tile( 0, ~~( Math.random() * 4 ), x * 16, y * 16, true );
 
                     // left
-                    if ( this.tiles[`${x - 1},${y}`] && !this.tiles[`${x - 1},${y}`].blocking ) {
-                        const selected = [ [ 5, 0 ], [ 5, 1 ], [ 5, 2 ], [ 5, 3 ] ][ Math.floor( Math.random() * 4 ) ];
-                        this.tiles[id] = new Tile( ...selected, x * 16, y * 16, true);
-                    }
-
+                    if ( this.tiles[ `${ x - 1 },${ y }` ] && !this.tiles[ `${ x - 1 },${ y }` ].blocking )
+                        this.tiles[ id ] = new Tile( 5, ~~( Math.random() * 4 ), x * 16, y * 16, true );
 
                     // down
-                    if ( this.tiles[`${x},${y + 1}`] && !this.tiles[`${x},${y + 1}`].blocking ) {
-                        const selected = [ [ 1, 0 ], [ 2, 0 ], [ 3, 0 ], [ 4, 0 ] ][ Math.floor( Math.random() * 4 ) ];
-                        this.tiles[id] = new Tile( ...selected, x * 16, y * 16, true);
-                    }
+                    if ( this.tiles[ `${ x },${ y + 1 }` ] && !this.tiles[ `${ x },${ y + 1 }` ].blocking )
+                        this.tiles[ id ] = new Tile( Math.floor( Math.random() * 4 ) + 1, 0 , x * 16, y * 16, true );
 
                     // up
-                    if ( this.tiles[`${x},${y - 1}`] && !this.tiles[`${x},${y - 1}`].blocking ) {
-                        const selected = [ [ 1, 4 ], [ 2, 4 ], [ 3, 4 ], [ 4, 4 ] ][ Math.floor( Math.random() * 4 ) ];
-                        this.tiles[id] = new Tile( ...selected, x * 16, y * 16, true);
-                    }
+                    if ( this.tiles[ `${ x },${ y - 1 }` ] && !this.tiles[ `${ x },${ y - 1 }` ].blocking )
+                        this.tiles[ id ] = new Tile( Math.floor( Math.random() * 4 ) + 1, 4 , x * 16, y * 16, true );
 
-                }
+
             }
         }
 
@@ -139,11 +135,22 @@ class Map {
 
         }
 
+        console.timeEnd( "Map Generation" );
+
     }
 
     getTileAt( x, y ) {
 
-        return Object.values( this.tiles ).filter( ( tile ) => tile.x === x * 16 && tile.y === y * 16 );
+        const id    = `${ x },${ y }`
+            , match = [ ];
+
+        if( this.tiles[ id ] )
+            match.push( this.tiles[ id ] );
+
+        if( this.tiles[ `door_${ id }` ] )
+            match.push( this.tiles[ `door_${ id }` ] );
+
+        return match;
 
     }
 
