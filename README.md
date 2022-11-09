@@ -1,3 +1,3 @@
 # Rogue2
 
-![127 0 0 1_5173_](https://user-images.githubusercontent.com/36574651/200895875-2290398c-61dd-4bf7-9f3f-d2e7f9f11d8f.png)
+![127 0 0 1_5173_ (1)](https://user-images.githubusercontent.com/36574651/200896345-54713c76-83b0-433b-addb-5596cb3ce734.png)
