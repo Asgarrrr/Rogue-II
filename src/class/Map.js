@@ -6,9 +6,7 @@ class Map {
 
     constructor() {
 
-        console.time( "Map Generation" );
-
-        this.digger = new ROT.Map.Digger( 80, 80 );
+        this.digger = new ROT.Map.Digger( 40, 40 );
 
         let width   = 0;
         let height  = 0;
@@ -45,21 +43,20 @@ class Map {
                 if ( this.tiles[ id ] )
                     continue;
 
-                    if ( this.tiles[ `${ x + 1 },${ y }`] && !this.tiles[ `${ x + 1 },${ y }`].blocking )
-                        this.tiles[ id ] = new Tile( 0, ~~( Math.random() * 4 ), x * 16, y * 16, true );
+                if ( this.tiles[ `${ x + 1 },${ y }`] && !this.tiles[ `${ x + 1 },${ y }`].blocking )
+                    this.tiles[ id ] = new Tile( 0, ~~( Math.random() * 4 ), x * 16, y * 16, true );
 
-                    // left
-                    if ( this.tiles[ `${ x - 1 },${ y }` ] && !this.tiles[ `${ x - 1 },${ y }` ].blocking )
-                        this.tiles[ id ] = new Tile( 5, ~~( Math.random() * 4 ), x * 16, y * 16, true );
+                // left
+                if ( this.tiles[ `${ x - 1 },${ y }` ] && !this.tiles[ `${ x - 1 },${ y }` ].blocking )
+                    this.tiles[ id ] = new Tile( 5, ~~( Math.random() * 4 ), x * 16, y * 16, true );
 
-                    // down
-                    if ( this.tiles[ `${ x },${ y + 1 }` ] && !this.tiles[ `${ x },${ y + 1 }` ].blocking )
-                        this.tiles[ id ] = new Tile( Math.floor( Math.random() * 4 ) + 1, 0 , x * 16, y * 16, true );
+                // down
+                if ( this.tiles[ `${ x },${ y + 1 }` ] && !this.tiles[ `${ x },${ y + 1 }` ].blocking )
+                    this.tiles[ id ] = new Tile( Math.floor( Math.random() * 4 ) + 1, 0 , x * 16, y * 16, true );
 
-                    // up
-                    if ( this.tiles[ `${ x },${ y - 1 }` ] && !this.tiles[ `${ x },${ y - 1 }` ].blocking )
-                        this.tiles[ id ] = new Tile( Math.floor( Math.random() * 4 ) + 1, 4 , x * 16, y * 16, true );
-
+                // up
+                if ( this.tiles[ `${ x },${ y - 1 }` ] && !this.tiles[ `${ x },${ y - 1 }` ].blocking )
+                    this.tiles[ id ] = new Tile( Math.floor( Math.random() * 4 ) + 1, 4 , x * 16, y * 16, true );
 
             }
         }
@@ -134,8 +131,6 @@ class Map {
                 this.tiles[ `rock_${ x },${ y }` ] = new Tile( 8, 6, x * 16, ( y * 16 ), false, true );
 
         }
-
-        console.timeEnd( "Map Generation" );
 
     }
 
