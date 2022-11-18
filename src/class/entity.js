@@ -9,20 +9,46 @@ class Entity {
 
     constructor( sx, sy, x, y, map ) {
 
-        this.sx = sx;
-        this.sy = sy;
-        this.x = x;
-        this.y = y;
-        this.turn = false;
-        this.map = map;
-        this.direction;
+        this.hostile     = false;
 
-        this.gridX = parseInt( x / 16 );
-        this.gridY = parseInt( y / 16 );
+        // —— Map related properties
+        this.sx          = sx;
+        this.sy          = sy;
+        this.x           = x;
+        this.y           = y;
+        this.gridX       = parseInt( x / 16 );
+        this.gridY       = parseInt( y / 16 );
+        this.map         = map;
+        this.direction   = null;
+        this.orientation = null;
 
-        this.lastFrame = 0;
-        this.frames = AssetManager.getSpriteImage( "entities", this.sx, this.sy ).width / 16;
-        this.lastUpdate = 0;
+        // —— Animation related properties
+        this.frames      = AssetManager.getSpriteImage( "entities", this.sx, this.sy ).width / 16;
+        this.lastFrame   = 0;
+        this.lastUpdate  = 0;
+
+        this.turn        = false;
+
+        // —— Statistic properties
+        this.HP         = 20;
+        this.maxHP      = 20;
+        this.ATK        = 10;
+        this.DEF        = 10;
+        this.SPD        = 10;
+        this.LUK        = 10;
+        this.EXP        = 0;
+        this.level      = 1;
+        this.gold       = 0;
+
+        this.inventory  = [];
+        this.equipment  = {
+            head    : null,
+            body    : null,
+            legs    : null,
+            feet    : null,
+            weapon  : null,
+            shield  : null
+        };
 
     }
 
@@ -35,7 +61,7 @@ class Entity {
             AssetManager.getSpriteImage( "entities", this.sx + this.lastFrame, this.sy ),
             this.x,
             this.y,
-            this.direction,
+            this.orientation,
             state == 1 ? 2 : 1
         );
 
@@ -85,11 +111,13 @@ class Entity {
         let newGridX = this.gridX;
         let newGridY = this.gridY;
 
-        switch (direction) {
+        switch ( direction ) {
             case "right":
+                this.orientation = "right";
                 newGridX++;
                 break;
             case "left":
+                this.orientation = "left";
                 newGridX--;
                 break;
             case "up":
@@ -99,6 +127,10 @@ class Entity {
                 newGridY++;
                 break;
         }
+
+        for ( let i = 0; i < game.entities.length; i++ )
+            if ( game.entities[i].gridX == newGridX && game.entities[i].gridY == newGridY )
+                return [ "monster", game.entities[i] ];
 
         if ( game.map.tiles[ `door_${newGridX},${newGridY}` ]?.blocking ) {
             game.map.tiles[`door_${newGridX},${newGridY}`].open();
