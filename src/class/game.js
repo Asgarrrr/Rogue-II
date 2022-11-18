@@ -11,25 +11,31 @@ import sprite from "../assets/Dungeon_Tileset.png";
 import entities from "../assets/entities.png";
 import flag from "../assets/testTrap.png";
 
+import Minimap from "./minimap";
 import GameMap from "./map";
 import Player from "./player";
 import TestEntity from "./testentity";
-import GroundTile from "./groundtile";
 
 class Game {
 
     constructor() {
-        this.entities = [];
-        this.tiles = [];
-        this.map = null;
-        this.render = this.render.bind( this );
-        this.update = this.update.bind( this );
-        this.engine = null;
+
+        this.entities   = [];
+        this.tiles      = [];
+        this.map        = null;
+        this.render     = this.render.bind( this );
+        this.update     = this.update.bind( this );
+        this.engine     = null;
+        this.visible    = { };
+
+        this.playerOPos = { x: null, y: null };
     }
 
     async init( ) {
 
         Renderer.createDisplay( 512, 288 );
+        Minimap.createDisplay( 128, 128 );
+
         await this.loadAssets();
 
         GameLoop.init({
@@ -96,61 +102,44 @@ class Game {
 
     render() {
 
-        const FOV = new ROT.FOV.PreciseShadowcasting( ( x, y ) =>
-            this.map.getTileAt( x, y )?.some( ( tile ) => tile.blocking ) ? 0 : 1
-        );
+        const [ x, y ] = [
+            this.player.x / 16,
+            this.player.y / 16
+        ];
 
-        const visible = { };
+        // Relatively expensive operation, so only do it when the player moves
+        if ( ~~this.playerOPos.x != ~~x || ~~this.playerOPos.y != ~~y ) {
 
-        FOV.compute( this.player.gridX, this.player.gridY, 10, ( x, y ) => {
-            visible[ `${ x },${ y }` ] = true;
-        });
+            this.visible = { };
 
-        // Render hard structures
+            // Calculate the field of view for the player
+            const FOV = new ROT.FOV.PreciseShadowcasting( ( x, y ) =>
+                this.map.getTileAt( x, y )?.some( ( tile ) => tile.blocking ) ? 0 : 1
+            );
+
+            // Determine which tiles are visible to the player
+            FOV.compute( this.player.gridX, this.player.gridY, 10, ( x, y ) => {
+                this.visible[ `${ x },${ y }` ] = true;
+            });
+
+            this.playerOPos = { x, y };
+
+        }
+
         for ( const tile of ( Object.values( this.map.tiles ).filter( ( tile ) => !tile.subTiles ) ) )
-            tile.render( visible[ `${ tile.x / 16 },${ tile.y / 16 }` ] | 0 )
+            tile.render( this.visible[ `${ tile.x / 16 },${ tile.y / 16 }` ] | 0 )
 
-        // Render sub-tiles
+        // Render sub-tiles ( doors, windows, etc. )
         for ( const tile of ( Object.values( this.map.tiles ).filter( ( tile ) => tile.subTiles ) ) )
-            tile.render( visible[ `${ tile.x / 16 },${ tile.y / 16 }` ] | 0 )
+            tile.render( this.visible[ `${ tile.x / 16 },${ tile.y / 16 }` ] | 0 )
 
-        // Render entities
-        for ( const entity of this.entities )
-            entity.render( visible[ `${entity.gridX},${entity.gridY}` ] | 0 );
+        // Render entities ( monsters, items, etc. )
+        for ( const entity of this.entities ) {
+            entity.render( this.visible[ `${ entity.gridX },${ entity.gridY }` ] | 0 )
+            // entities.hunt( player );
+        };
 
-        const w = Renderer.display.context.canvas.width;
-        const h = Renderer.display.context.canvas.height;
-
-        for ( const tile of ( Object.values( this.map.tiles ).filter( ( tile ) => !tile.subTiles ) ) )
-            if( tile.blocking ) {
-
-                if ( tile.alreadyRendered ) {
-
-                    Renderer.display.context.fillStyle = "grey";
-                    Renderer.display.context.globalAlpha = 0.6;
-                    Renderer.display.context.fillRect( w - 128 + tile.x / 16, h - 128 + tile.y / 16, 1, 1 );
-                    Renderer.display.context.globalAlpha = 1;
-
-                }
-
-            }
-
-
-        Renderer.display.context.fillStyle = "green";
-
-        for ( const tile of ( Object.values( this.map.tiles ).filter( ( tile ) => tile.subTiles ) ) )
-            if( tile.blocking && visible[ `${ tile.x / 16 },${ tile.y / 16 }` ] )
-                Renderer.display.context.fillRect( w - 128 + tile.x / 16, h - 128 + tile.y / 16, 1, 1 );
-
-        Renderer.display.context.fillStyle = "blue";
-
-        for ( const entity of this.entities )
-            if( visible[ `${ entity.x / 16 },${ entity.y / 16 }` ] )
-                Renderer.display.context.fillRect( w - 128 + entity.gridX, h - 128 + entity.gridY, 1, 1 );
-
-        Renderer.display.context.fillStyle = "yellow";
-
-        Renderer.display.context.fillRect( w - 128 + this.player.gridX, h - 128 + this.player.gridY, 1, 1 );
+        Minimap.update( this.visible, this.map.tiles, [ this.entities, this.player ] );
 
 
     }
