@@ -1,11 +1,15 @@
-import express from "express";
-const app = express();
-void async function main() {
-  app.get("/test", (req, res) => {
-    res.send("Hello World");
+import { createServer } from "http";
+import { Server } from "socket.io";
+const httpServer = createServer();
+const io = new Server(httpServer, {});
+const handler = (req, res, next) => {
+  if (req.path === "/hello")
+    return res.end("hello");
+  io.on("connection", (socket) => {
+    console.log("a user connected");
   });
-}();
-const handler = app;
+  next();
+};
 export {
   handler
 };

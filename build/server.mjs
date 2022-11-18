@@ -5,7 +5,7 @@ import * as qs__default from "querystring";
 import qs__default__default from "querystring";
 import http from "http";
 import { handler } from "./handler.mjs";
-import "express";
+import "socket.io";
 function every(arr, cb) {
   var i = 0, len = arr.length;
   for (; i < len; i++) {
@@ -287,7 +287,7 @@ class Polka extends trouter {
 var polka = (opts) => new Polka(opts);
 const serveIndex = (req, res) => {
   res.setHeader("Content-Type", "text/html");
-  res.end('<!DOCTYPE html>\n<html lang="en">\n  <head>\n    <meta charset="UTF-8" />\n    <link rel="icon" type="image/svg+xml" href="/vite.svg" />\n    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n    <title>Vite + React</title>\n    <script type="module" crossorigin src="/assets/index.027b8bce.js"><\/script>\n    <link rel="stylesheet" href="/assets/index.3fce1f81.css">\n  </head>\n  <body>\n    <div id="root"></div>\n    \n  </body>\n</html>\n');
+  res.end('<!DOCTYPE html>\n<html lang="en">\n  <head>\n    <meta charset="UTF-8" />\n    <link rel="icon" type="image/svg+xml" href="/vite.svg" />\n    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n    <title>Vite + React</title>\n    <script type="module" crossorigin src="/assets/index.50bbef0d.js"><\/script>\n    <link rel="stylesheet" href="/assets/index.c508108b.css">\n  </head>\n  <body>\n    <div id="root"></div>\n    \n  </body>\n</html>\n');
 };
 const applyHandler = (server2) => {
   if (Array.isArray(handler)) {
