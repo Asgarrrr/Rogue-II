@@ -2,26 +2,29 @@ import Camera from "./camera";
 
 class Renderer {
 
-    display = null;
-    camera = null;
-    tileSize = 16;
+    display     = null;
+    camera      = null;
+    tileSize    = 16;
 
-    createDisplay(width, height) {
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        const context = canvas.getContext("2d");
-        const display = {};
-        display.canvas = canvas;
-        display.context = context;
-        this.display = display;
-        document.querySelector("#app").appendChild(canvas);
-        context.fillStyle = "#000000";
+    createDisplay( width, height ) {
+
+        // Main game display
+        const mgd    = document.createElement( "canvas" );
+        mgd.id       = "main-game-display";
+        mgd.width    = width;
+        mgd.height   = height;
+        this.display = {
+            canvas : mgd,
+            context: mgd.getContext( "2d" )
+        };
+
+        document.querySelector( "#game" ).appendChild( mgd );
+
         this.camera = new Camera( width, height );
-        return display;
+        return mgd;
     }
 
-    render( spriteImage, x, y, direction, state ) {
+    render( spriteImage, x, y, orientation, state ) {
 
         let renderX = this.camera.cx - this.camera.x + x;
         let renderY = this.camera.cy - this.camera.y + y;
@@ -38,10 +41,11 @@ class Renderer {
 
             this.display.context.globalAlpha = state === 1 ? 0.4 : 1;
 
-            if ( direction === "left" ) {
-                // Flip the sprite horizontally
+            // —— Depending on the orientation, we need to rotate the sprite
+            if ( orientation === "left" ) {
+
                 this.display.context.save();
-                this.display.context.scale(-1, 1);
+                this.display.context.scale( -1, 1 );
                 this.display.context.drawImage(
                     spriteImage.image,
                     spriteImage.dx * this.tileSize,
@@ -54,21 +58,22 @@ class Renderer {
                     this.tileSize
                 );
                 this.display.context.restore();
-                return;
+
+            } else {
+
+                this.display.context.drawImage(
+                    spriteImage.image,
+                    spriteImage.dx * this.tileSize,
+                    spriteImage.dy * this.tileSize,
+                    this.tileSize,
+                    this.tileSize,
+                    renderX,
+                    renderY,
+                    this.tileSize,
+                    this.tileSize
+                );
 
             }
-
-            this.display.context.drawImage(
-                spriteImage.image,
-                spriteImage.dx * this.tileSize,
-                spriteImage.dy * this.tileSize,
-                this.tileSize,
-                this.tileSize,
-                renderX,
-                renderY,
-                this.tileSize,
-                this.tileSize
-            );
 
         }
     }
