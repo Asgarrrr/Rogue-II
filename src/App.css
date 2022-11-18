@@ -13,11 +13,44 @@ body {
     overflow: hidden;
 }
 
-canvas {
+#game {
+    position: relative;
+}
+
+#main-game-display {
     width: 100%;
     image-rendering: -moz-crisp-edges;
     image-rendering: -webkit-crisp-edges;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
     background: #25131A;
+    display: block;
+}
+
+#hud-display {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    border: 1px solid #000;
+}
+
+#stats {
+    position: absolute;
+    z-index: 1;
+    bottom: 0;
+}
+
+#minimap-wall-layer {
+    position: absolute;
+    z-index: 1;
+    bottom: 0;
+    right: 0;
+}
+
+#minimap-entity-layer {
+    position: absolute;
+    z-index: 2;
+    bottom: 0;
+    right: 0;
 }
