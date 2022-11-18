@@ -5,6 +5,8 @@ import {
 
 import Entity from "./entity";
 
+import game from "./game";
+
 /**
  * @class Player
  * @extends Entity
@@ -16,6 +18,7 @@ class Player extends Entity {
         super( 0, 9, 16, 0 );
         this.direction  = null;
         this.type       = "player";
+
     }
 
     /**
@@ -38,9 +41,23 @@ class Player extends Entity {
             else if ( Keyboard.pressed( "ArrowDown" ) )
                 this.direction = "down";
 
-            if ( this.direction )
-                if ( this.move( this.direction ) )
+            if ( this.direction ) {
+
+                const m = this.move( this.direction );
+
+                if ( m === true )
                     this.turnDone();
+                else if ( Array.isArray( m ) ) {
+
+                    if ( m[ 0 ] === "monster" ) {
+                        console.log( "Fight!" );
+                    }
+
+                    this.turnDone();
+
+                }
+
+            }
 
         }
 
