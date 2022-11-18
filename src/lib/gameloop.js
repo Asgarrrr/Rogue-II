@@ -20,6 +20,13 @@ class GameLoop {
         this.update         = null;
         this.render         = null;
 
+        this.fpsArray       = [];
+        this.fpsAverage     = 0;
+        this.fpsLast        = 0;
+
+        this.renderTimeArray = [];
+        this.renderTimeAverage = 0;
+
     }
 
     clear() {
@@ -47,7 +54,7 @@ class GameLoop {
         this.accumulator += this.dt;
 
         while ( this.accumulator >= this.delta ) {
-            this.update(this.step);
+            this.update( this.step );
             this.accumulator -= this.delta;
         }
 
@@ -58,11 +65,13 @@ class GameLoop {
 
         const renderTime = new Date() - time;
 
+        this.renderTimeArray.push( renderTime );
+        this.renderTimeAverage = this.renderTimeArray.reduce( ( a, b ) => a + b ) / this.renderTimeArray.length;
 
-        Renderer.display.context.fillStyle = "white";
-        Renderer.display.context.font = "12px monospace";
-        Renderer.display.context.fillText( `FPS: ${ Math.round( 1e3 / this.dt ) }`, 10, 12 );
-        Renderer.display.context.fillText( `Render Time: ${ renderTime } ms`, 10, 24 );
+        document.querySelector( "#stats" ).innerHTML = `
+            <div>FPS: ${Math.round( 1e3 / ( this.dt + renderTime ) )}</div>
+            <div>Render time: ${renderTime}ms (average: ${( this.renderTimeAverage )}ms)</div>
+        `;
 
     }
 
