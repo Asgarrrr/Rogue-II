@@ -12,7 +12,7 @@ import entities from "../assets/entities.png";
 import flag from "../assets/testTrap.png";
 
 import Minimap from "./minimap";
-import GameMap from "./map";
+import GameMap from "./map.js";
 import Player from "./player";
 import TestEntity from "./testentity";
 
@@ -55,10 +55,10 @@ class Game {
         player.gridY = parseInt( tile.y / 16 );
         this.entities.push( player );
 
-        for ( let i = 0; i < 5; i++ ) {
+        for ( let i = 0; i < 1; i++ ) {
 
             // Create a new test entity, and place it in a random room
-            const entity = new TestEntity( 0, [ 0, 2, 4, 6 ][ Math.floor( Math.random() * 5 ) ], 0, 0 );
+            const entity = new TestEntity( 0, [ 0, 2, 4, 6 ][ Math.floor( Math.random() * 4 ) ], 0, 0 );
             const room = this.map.getRooms()[~~( Math.random() * this.map.getRooms().length )];
 
             const { _x1, _x2, _y1, _y2 } = room;
@@ -134,10 +134,8 @@ class Game {
             tile.render( this.visible[ `${ tile.x / 16 },${ tile.y / 16 }` ] | 0 )
 
         // Render entities ( monsters, items, etc. )
-        for ( const entity of this.entities ) {
+        for ( const entity of this.entities )
             entity.render( this.visible[ `${ entity.gridX },${ entity.gridY }` ] | 0 )
-            // entities.hunt( player );
-        };
 
         Minimap.update( this.visible, this.map.tiles, [ this.entities, this.player ] );
 
