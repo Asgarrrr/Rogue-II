@@ -110,6 +110,8 @@ class Game {
         // Relatively expensive operation, so only do it when the player moves
         if ( ~~this.playerOPos.x != ~~x || ~~this.playerOPos.y != ~~y ) {
 
+            console.log( "Player moved" );
+
             this.visible = { };
 
             // Calculate the field of view for the player
@@ -126,14 +128,14 @@ class Game {
 
         }
 
-        for ( const tile of ( Object.values( this.map.tiles ).filter( ( tile ) => !tile.subTiles ) ) )
-            tile.render( this.visible[ `${ tile.x / 16 },${ tile.y / 16 }` ] | 0 )
+        for ( const tile of Object.values( this.map.tiles ) )
+            tile.render( 1 );
 
-        // Render sub-tiles ( doors, windows, etc. )
-        for ( const tile of ( Object.values( this.map.tiles ).filter( ( tile ) => tile.subTiles ) ) )
-            tile.render( this.visible[ `${ tile.x / 16 },${ tile.y / 16 }` ] | 0 )
+        // // Render sub-tiles ( doors, windows, etc. )
+        // for ( const tile of ( Object.values( this.map.tiles ).filter( ( tile ) => tile.subTiles ) ) )
+        //     tile.render( this.visible[ `${ tile.x / 16 },${ tile.y / 16 }` ] | 0 )
 
-        // Render entities ( monsters, items, etc. )
+        // // Render entities ( monsters, items, etc. )
         for ( const entity of this.entities )
             entity.render( this.visible[ `${ entity.gridX },${ entity.gridY }` ] | 0 )
 
