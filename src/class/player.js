@@ -1,6 +1,6 @@
 import {
     Keyboard,
-    Renderer
+    Renderer,
 } from "../lib/index";
 
 import Entity from "./entity";
@@ -40,6 +40,9 @@ class Player extends Entity {
                 this.direction = "up";
             else if ( Keyboard.pressed( "ArrowDown" ) )
                 this.direction = "down";
+            else if ( Keyboard.pressed( "d" ) )
+                this.turnDone();
+
 
             if ( this.direction ) {
 
@@ -50,7 +53,11 @@ class Player extends Entity {
                 else if ( Array.isArray( m ) ) {
 
                     if ( m[ 0 ] === "monster" ) {
-                        console.log( "Fight!" );
+
+                        console.log( "Monster" );
+                        m[ 1 ].takeDamage( 1 );
+                        this.turnDone();
+
                     }
 
                     this.turnDone();
@@ -67,6 +74,7 @@ class Player extends Entity {
         Renderer.camera.y = this.y;
 
     }
+
 }
 
 export default Player;
