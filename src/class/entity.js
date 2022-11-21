@@ -1,15 +1,15 @@
 import {
     Renderer,
-    AssetManager
+    AssetManager,
 } from "../lib/index";
 
 import game from "./game";
 
 class Entity {
 
-    constructor( sx, sy, x, y, map ) {
+    constructor( sx, sy, x, y, map, hostile = false ) {
 
-        this.hostile     = false;
+        this.hostile     = hostile;
 
         // —— Map related properties
         this.sx          = sx;
@@ -71,6 +71,21 @@ class Entity {
                 this.lastFrame = 0;
 
             this.lastUpdate = Date.now();
+
+        }
+
+        if ( this.hostile ) {
+
+            const renderX = Renderer.camera.cx - Renderer.camera.x + this.x;
+            const renderY = Renderer.camera.cy - Renderer.camera.y + this.y;
+
+            // —— Draw the HP bar ( green part )
+            Renderer.display.context.fillStyle = "rgba( 0, 255, 0, 0.2 )";
+            Renderer.display.context.fillRect( renderX, renderY - 5, ( this.HP / this.maxHP ) * 16, 2 );
+
+            // —— Draw the HP bar ( red part )
+            Renderer.display.context.fillStyle = "rgba( 255, 0, 0, 0.2 )";
+            Renderer.display.context.fillRect( renderX + ( this.HP / this.maxHP ) * 16, renderY - 5, ( ( this.maxHP - this.HP ) / this.maxHP ) * 16, 2 );
 
         }
 
@@ -146,6 +161,26 @@ class Entity {
         }
         return result;
     }
+
+    moveToCell( x, y ) {
+
+        this.gridX = x;
+        this.gridY = y;
+
+        return true;
+
+    }
+
+    /**
+     * @method getPosition
+     * @description Returns the entity position
+     * @returns {Array} The entity position
+     */
+    getPosition() {
+        return [ this.gridX, this.gridY ];
+    }
+
+
 }
 
 export default Entity;
