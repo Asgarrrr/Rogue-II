@@ -20,7 +20,7 @@ class Tile {
         if ( !state && !this.alreadyRendered )
             return;
 
-        if ( state == 1 && !this.alreadyRendered )
+        if ( state === 1 && !this.alreadyRendered )
             this.alreadyRendered = true;
 
         Renderer.render(

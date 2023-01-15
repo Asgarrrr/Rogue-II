@@ -4,6 +4,7 @@ import {
     Camera,
 } from "../lib/index";
 
+import Player from "./player";
 import game from "./game";
 import Entity from "./entity";
 import AStar from "rot-js/lib/path/AStar";
@@ -40,10 +41,11 @@ class TestEntity extends Entity {
                     const m = this.moveToCell( nextX, nextY );
 
                 } else {
-
+                    game.player.takeDamage( 1 );
                 }
 
                 this.turnDone();
+
 
             } else {
 
@@ -62,6 +64,10 @@ class TestEntity extends Entity {
     takeDamage( damage ) {
 
         this.HP -= damage;
+
+        if ( this.HP <= 0 )
+            this.die();
+
 
     }
 

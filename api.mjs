@@ -1,16 +1,34 @@
 
-import express from 'express';
+import express from "express";
+import { createServer } from "http";
+import { Server } from "socket.io";
+import cors from "cors";
 
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"],
+    },
+});
+
+app.use(cors());
 
 export default function api() {
 
-    app.get('/api', (req, res) => {
-        res.send('Hello World!');
+    console.log( "API server started" );
+
+    io.on("connection", (socket) => {
+
+        socket.on("saveMap", (map) => {
+
+            console.log("Map saved");
+
+        });
+
     });
 
-    app.listen( "5172", () => {
-        console.log('Example app listening on port 5173!');
-    });
+    httpServer.listen(3000);
 
 }

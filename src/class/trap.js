@@ -1,9 +1,5 @@
 
-import {
-    Renderer,
-    AssetManager
-} from "../lib/index";
-
+import { Renderer, AssetManager } from "../lib/index";
 import Tile from "./tile";
 
 export default class Trap extends Tile {
@@ -21,22 +17,24 @@ export default class Trap extends Tile {
     render() {
 
         Renderer.render(
-            AssetManager.getSpriteImage("flag", this.lastFrame, this.sy ),
+            AssetManager.getSpriteImage( "flag", this.lastFrame, this.sy ),
             this.x,
             this.y
         );
 
-        if ( this.lastUpdate + 200 < Date.now() ) {
+        const dn = Date.now();
+
+        if ( this.lastUpdate + 200 < dn ) {
 
             if ( ++this.lastFrame >= this.frames )
                 this.lastFrame = 0;
 
-            this.lastUpdate = Date.now();
+            this.lastUpdate = dn;
 
         }
 
     }
 
-    update(delta) {}
+    update( delta ) { }
 
 }

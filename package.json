@@ -1,26 +1,31 @@
 {
-  "name": "rand",
-  "private": true,
-  "version": "0.0.0",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "start": "npx http-server ./dist -g --no-dotfiles"
-  },
-  "dependencies": {
-    "express": "^4.18.2",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "rot-js": "^2.2.0",
-    "socket.io": "^4.5.3",
-    "socket.io-client": "^4.5.3"
-  },
-  "devDependencies": {
-    "@types/react": "^18.0.22",
-    "@types/react-dom": "^18.0.7",
-    "@vitejs/plugin-react": "^2.2.0",
-    "vite": "^3.2.0",
-    "vite-plugin-mix": "^0.4.0"
-  }
+    "name": "rand",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "start": "npx http-server ./dist -g --no-dotfiles",
+        "test": "mocha --parallel --recursive ./test"
+    },
+    "dependencies": {
+        "chai": "^4.3.7",
+        "cors": "^2.8.5",
+        "express": "^4.18.2",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "rot-js": "^2.2.0",
+        "socket.io": "^4.5.3",
+        "socket.io-client": "^4.5.3"
+    },
+    "devDependencies": {
+        "@types/react": "^18.0.22",
+        "@types/react-dom": "^18.0.7",
+        "@vitejs/plugin-react": "^2.2.0",
+        "mocha": "^10.1.0",
+        "vite": "^3.2.0",
+        "vite-plugin-mix": "^0.4.0"
+    }
 }

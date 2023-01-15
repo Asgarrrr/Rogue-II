@@ -18,7 +18,6 @@ class Player extends Entity {
         super( 0, 9, 16, 0 );
         this.direction  = null;
         this.type       = "player";
-
     }
 
     /**
@@ -40,29 +39,24 @@ class Player extends Entity {
                 this.direction = "up";
             else if ( Keyboard.pressed( "ArrowDown" ) )
                 this.direction = "down";
-            else if ( Keyboard.pressed( "d" ) )
-                this.turnDone();
-
 
             if ( this.direction ) {
 
                 const m = this.move( this.direction );
 
+                if ( !m )
+                    return;
+
                 if ( m === true )
-                    this.turnDone();
+                    console.log( this.HP );
                 else if ( Array.isArray( m ) ) {
 
-                    if ( m[ 0 ] === "monster" ) {
-
-                        console.log( "Monster" );
-                        m[ 1 ].takeDamage( 1 );
-                        this.turnDone();
-
-                    }
-
-                    this.turnDone();
+                    if ( m[ 0 ] === "monster" )
+                        m[ 1 ].takeDamage( 5 );
 
                 }
+
+                this.turnDone();
 
             }
 
@@ -72,6 +66,15 @@ class Player extends Entity {
 
         Renderer.camera.x = this.x;
         Renderer.camera.y = this.y;
+
+    }
+
+    takeDamage( damage ) {
+
+        this.HP -= damage || 1;
+
+        if ( this.HP <= 0 )
+            game.gameOver();
 
     }
 

@@ -6,6 +6,13 @@ body {
     padding: 0;
 }
 
+canvas {
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
 #root,
 #app {
     width: 100%;
