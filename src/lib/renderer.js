@@ -6,9 +6,15 @@ class Renderer {
     camera      = null;
     tileSize    = 16;
 
+    /**
+     * Creates the main game display
+     * @param   { Number } width
+     * @param   { Number } height
+     * @returns { HTMLCanvasElement}
+    */
     createDisplay( width, height ) {
 
-        // Main game display
+        // —— Main game display
         const mgd    = document.createElement( "canvas" );
         mgd.id       = "main-game-display";
         mgd.width    = width;
@@ -24,11 +30,23 @@ class Renderer {
         return mgd;
     }
 
+
+    /**
+     * Renders a sprite image
+     * @param   { Image } spriteImage
+     * @param   { Number } x
+     * @param   { Number } y
+     * @param   { String } orientation
+     * @param   { Number } state
+     * @returns { void }
+     * @todo    Add better support for animations ( currently set inner entity class )
+     */
     render( spriteImage, x, y, orientation, state ) {
 
-        let renderX = this.camera.cx - this.camera.x + x;
-        let renderY = this.camera.cy - this.camera.y + y;
+        const renderX = this.camera.cx - this.camera.x + x
+            , renderY = this.camera.cy - this.camera.y + y;
 
+        // –– Only render the sprite if it is within the camera's view
         if (
             renderX >= 0 - this.tileSize * 2 &&
             renderX <= this.display.canvas.width + this.tileSize * 2 &&
