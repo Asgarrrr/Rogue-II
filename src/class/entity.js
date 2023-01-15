@@ -1,8 +1,4 @@
-import {
-    Renderer,
-    AssetManager,
-} from "../lib/index";
-
+import { Renderer, AssetManager } from "../lib/index";
 import game from "./game";
 
 class Entity {
@@ -76,8 +72,8 @@ class Entity {
 
         if ( this.hostile ) {
 
-            const renderX = Renderer.camera.cx - Renderer.camera.x + this.x;
-            const renderY = Renderer.camera.cy - Renderer.camera.y + this.y;
+            const renderX = Renderer.camera.cx - Renderer.camera.x + this.x
+                , renderY = Renderer.camera.cy - Renderer.camera.y + this.y;
 
             // —— Draw the HP bar ( green part )
             Renderer.display.context.fillStyle = "rgba( 0, 255, 0, 0.2 )";
@@ -122,9 +118,9 @@ class Entity {
 
     move( direction ) {
 
-        let result = false;
-        let newGridX = this.gridX;
-        let newGridY = this.gridY;
+        let result   = false
+          , newGridX = this.gridX
+          , newGridY = this.gridY;
 
         switch ( direction ) {
             case "right":
@@ -147,14 +143,12 @@ class Entity {
             if ( game.entities[i].gridX == newGridX && game.entities[i].gridY == newGridY )
                 return [ "monster", game.entities[i] ];
 
-        if ( game.map.tiles[ `door_${newGridX},${newGridY}` ]?.blocking ) {
-            game.map.tiles[`door_${newGridX},${newGridY}`].open();
+        if ( game.map.tiles[ `door_${ newGridX },${ newGridY }` ]?.blocking ) {
+            game.map.tiles[`door_${ newGridX },${ newGridY }`].open();
             result = true;
         }
 
-        if (
-            !game.map.tiles[`${newGridX},${newGridY}`]?.blocking
-        ) {
+        if ( !game.map.tiles[`${ newGridX },${ newGridY }`]?.blocking ) {
             this.gridX = newGridX;
             this.gridY = newGridY;
             result = true;
@@ -162,10 +156,16 @@ class Entity {
         return result;
     }
 
-    moveToCell( x, y ) {
+    /**
+     * @method moveToCell
+     * @description Sets the entity position
+     * @param {Number} X - The X coordinate of the tile
+     * @param {Number} Y - The Y coordinate of the tile
+     */
+    moveToCell( X, Y ) {
 
-        this.gridX = x;
-        this.gridY = y;
+        this.gridX = X;
+        this.gridY = Y;
 
         return true;
 
@@ -180,6 +180,10 @@ class Entity {
         return [ this.gridX, this.gridY ];
     }
 
+    die() {
+        game.entities.splice( game.entities.indexOf( this ), 1 );
+        game.scheduler.remove( this );
+    }
 
 }
 
