@@ -14,16 +14,29 @@ import game from "./game";
  */
 class Player extends Entity {
 
-    constructor() {
-        super( 0, 9, 16, 0 );
+    constructor( XP = 1 ) {
+
+        super( 0, 8, 16, 0 );
+
         this.direction  = null;
         this.type       = "player";
+        this.ATK        = 10;
+
+        // —— Experience related properties
+        this.XP     = XP;
+        this.level  = ( ) => Math.ceil( ( Math.sqrt( 1 + ( 8 * this.XP ) / 100 ) - 1 ) / 2 );
+        this.maxXP  = ( ) => ( Math.ceil( this.level() ) * ( Math.ceil( this.level() ) + 1 ) ) * 100;
+
+        document.getElementById( "HPBar" ).style.background = `linear-gradient(90deg, #992020 ${( ( this.HP / this.maxHP ) * 100 )}%, #180e12 ${( ( this.HP / this.maxHP ) * 100 )}%)`;
+        document.getElementById( "HPCurrent" ).innerHTML = this.HP;
+        document.getElementById( "HPMax" ).innerHTML = this.maxHP;
+        document.getElementById( "XPBar" ).style.background = `linear-gradient(90deg, #FFAF6599 ${( ( this.XP / this.maxXP() ) * 100 )}%, #180e12 ${( ( this.XP / this.maxXP() ) * 100 )}%)`;
+        document.getElementById( "XPLvl" ).innerHTML = this.level();
     }
 
     /**
-     * @method update
      * @description Update the position of the player ( and the camera )
-     * @returns {void}
+     * @returns     { void }
      */
     update() {
 
@@ -39,6 +52,8 @@ class Player extends Entity {
                 this.direction = "up";
             else if ( Keyboard.pressed( "ArrowDown" ) )
                 this.direction = "down";
+            else if ( Keyboard.pressed( " " ) )
+                return this.turnDone();
 
             if ( this.direction ) {
 
@@ -47,12 +62,13 @@ class Player extends Entity {
                 if ( !m )
                     return;
 
-                if ( m === true )
-                    console.log( this.HP );
+                if ( m === true ) {
+
+                }
                 else if ( Array.isArray( m ) ) {
 
                     if ( m[ 0 ] === "monster" )
-                        m[ 1 ].takeDamage( 5 );
+                        this.attack( m[ 1 ] );
 
                 }
 
@@ -69,12 +85,60 @@ class Player extends Entity {
 
     }
 
-    takeDamage( damage ) {
+    /**
+     * @description Called when the player die
+     * @returns     { void }
+     * @override
+     * @see         Entity.die
+     */
+    die() {
+        super.die();
+        game.gameOver();
+    }
 
-        this.HP -= damage || 1;
+    /**
+     * @description Update the HP bar
+     * @param       { number } hp - The new HP
+     * @returns     { void }
+     */
+    setHP( hp ) {
+        super.setHP( hp );
+        document.getElementById( "HPBar" ).style.background = `linear-gradient(90deg, #992020 ${( ( this.HP / this.maxHP ) * 100 )}%, #180e12 ${( ( this.HP / this.maxHP ) * 100 )}%)`;
+        document.getElementById( "HPCurrent" ).innerHTML = this.HP;
+        document.getElementById( "HPMax" ).innerHTML = this.maxHP;
+    }
 
-        if ( this.HP <= 0 )
-            game.gameOver();
+    setXP( xp ) {
+
+        const levelBefore = this.level();
+
+        this.XP += xp;
+
+        if ( this.level() > levelBefore ) {
+
+            // Block rendering
+
+
+            document.getElementById( "XPLvl" ).innerHTML = this.level();
+
+            Renderer.display.context.fillStyle = "#FFAF65";
+            Renderer.display.context.font = "20px Arial";
+            Renderer.display.context.fillText( `Level up!`, 0, 0 );
+            Renderer.display.context.fillStyle = "#FFFFFF";
+            Renderer.display.context.font = "12px Arial";
+            Renderer.display.context.fillText( `You are now level ${this.level()}`, 0, 20 );
+
+        }
+
+        document.getElementById( "XPBar" ).style.background = `linear-gradient(90deg, #FFAF6599 ${( ( this.XP / this.maxXP() ) * 100 )}%, #180e12 ${( ( this.XP / this.maxXP() ) * 100 )}%)`;
+    }
+
+
+    reward( from ) {
+
+        console.log( "Rewarding player" );
+
+        this.setXP( 60 );
 
     }
 
