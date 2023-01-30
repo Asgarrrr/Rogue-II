@@ -4,7 +4,8 @@ import {
     Renderer,
     AssetManager,
     GameLoop,
-    Keyboard
+    Keyboard,
+    Camera,
 } from "../lib/index";
 
 import sprite from "../assets/Dungeon_Tileset.png";
@@ -61,32 +62,45 @@ class Game {
         player.gridY = parseInt( tile.y / 16 );
         this.entities.push( player );
 
-        // for ( let i = 0; i < 1; i++ ) {
+        for ( let i = 0; i < 1; i++ ) {
 
-        //     // Create a new test entity, and place it in a random room
-        //     const entity = new TestEntity( 0, [ 0, 2, 4, 6 ][ Math.floor( Math.random() * 4 ) ], 0, 0 );
-        //     const room = this.map.getRooms()[~~( Math.random() * this.map.getRooms().length )];
+            // Create a new test entity, and place it in a random room
+            const entity = new TestEntity( 0, [ 0, 2, 4, 6 ][ Math.floor( Math.random() * 4 ) ], 0, 0 );
+            const room = this.map.getRooms()[~~( Math.random() * this.map.getRooms().length )];
 
-        //     const { _x1, _x2, _y1, _y2 } = room;
+            const { _x1, _x2, _y1, _y2 } = room;
 
-        //     // TODO: Check if the tile is walkable
-        //     entity.x = ~~( Math.random() * ( _x2 - _x1 ) + _x1 ) * 16;
-        //     entity.gridX = parseInt( entity.x / 16 );
-        //     entity.y = ~~( Math.random() * ( _y2 - _y1 ) + _y1 ) * 16;
-        //     entity.gridY = parseInt( entity.y / 16 );
-        //     this.entities.push( entity );
+            // TODO: Check if the tile is walkable
+            entity.x = ~~( Math.random() * ( _x2 - _x1 ) + _x1 ) * 16;
+            entity.gridX = parseInt( entity.x / 16 );
+            entity.y = ~~( Math.random() * ( _y2 - _y1 ) + _y1 ) * 16;
+            entity.gridY = parseInt( entity.y / 16 );
+            this.entities.push( entity );
 
-        // }
+        }
 
         this.scheduler = new ROT.Scheduler.Simple();
 
-        for (const entity of this.entities)
+        for ( const entity of this.entities )
             this.scheduler.add( entity, true );
 
         this.engine = new ROT.Engine( this.scheduler );
         this.engine.start();
 
         GameLoop.start();
+
+        Renderer.display.canvas.addEventListener( "mousemove", ( e ) => {
+
+            const rect = Renderer.display.canvas.getBoundingClientRect();
+
+            // –– Get the mouse position relative to the canvas ( take into account the width and height of the canvas )
+            const x = ( e.clientX - rect.left ) / ( rect.right - rect.left ) * Renderer.display.canvas.width;
+            const y = ( e.clientY - rect.top ) / ( rect.bottom - rect.top ) * Renderer.display.canvas.height;
+
+            this.mouse = { x, y };
+
+        } );
+
     }
 
     /**
@@ -94,9 +108,9 @@ class Game {
      */
     async loadAssets() {
 
-        await AssetManager.loadImage("sprites", sprite);
-        await AssetManager.loadImage("entities", entities );
-        await AssetManager.loadImage("flag", flag );
+        await AssetManager.loadImage( "sprites", sprite );
+        await AssetManager.loadImage( "entities", entities );
+        await AssetManager.loadImage( "flag", flag );
 
     }
 
@@ -136,6 +150,26 @@ class Game {
             entity.render( this.visible[ `${ entity.gridX },${ entity.gridY }` ] | 0 )
 
         Minimap.update( this.visible, this.map.tiles, [ this.entities, this.player ] );
+
+        // Draw squares around the mouse position ( only on floor tiles )
+        if ( this.mouse ) {
+
+            const x = ~~( this.mouse.x / 16 ) * 16;
+            const y = ~~( this.mouse.y / 16 ) * 16;
+
+            const renderX = Renderer.camera.cx - Renderer.camera.x
+                , renderY = Renderer.camera.cy - Renderer.camera.y;
+
+            const tile = this.map.getTileAt( ( x - renderX ) / 16, ( y - renderY ) / 16 )?.[ 0 ];
+
+            // if ( tile && !tile.blocking && this.visible[ `${ tile.x / 16 },${ tile.y / 16 }` ] ) {
+
+            //     Renderer.display.context.fillStyle = "rgba( 255, 255, 255, 0.5 )";
+            //     Renderer.display.context.fillRect( x, y, 16, 16 );
+
+            // }
+
+        }
 
     }
 
