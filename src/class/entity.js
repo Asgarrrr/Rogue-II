@@ -28,11 +28,11 @@ class Entity {
         // —— Statistic properties
         this.HP         = 20;
         this.maxHP      = 20;
-        this.ATK        = 10;
+        this.ATK        = 2;
         this.DEF        = 10;
         this.SPD        = 10;
         this.LUK        = 10;
-        this.EXP        = 0;
+
         this.level      = 1;
         this.gold       = 0;
 
@@ -46,6 +46,8 @@ class Entity {
             shield  : null
         };
 
+        this.hasTakeDamage = false;
+
     }
 
     render( state = 0 ) {
@@ -53,13 +55,55 @@ class Entity {
         if ( !state )
             return;
 
-        Renderer.render(
-            AssetManager.getSpriteImage( "entities", this.sx + this.lastFrame, this.sy ),
-            this.x,
-            this.y,
-            this.orientation,
-            state == 1 ? 2 : 1
-        );
+        const sprite = AssetManager.getSpriteImage( "entities", this.sx + this.lastFrame, this.sy );
+
+        // if hasTakeDamage is true, then we need to render the entity with a red filter
+        if ( this.hasTakeDamage ) {
+
+            // Change the color of the sprite
+            const canvas = document.createElement( "canvas" );
+            canvas.width = sprite.width;
+            canvas.height = sprite.height;
+            const context = canvas.getContext( "2d" );
+
+            context.drawImage( sprite.image, 0, 0, sprite.width, sprite.height, 0, 0, sprite.width, sprite.height );
+
+            const imageData = context.getImageData( 0, 0, sprite.width, sprite.height );
+            const data = imageData.data;
+
+            for ( let i = 0; i < data.length; i += 4 ) {
+                data[ i ] = 255;
+                data[ i + 1 ] = 0;
+                data[ i + 2 ] = 0;
+            }
+
+            context.putImageData( imageData, 0, 0 );
+
+            const newSprite = new Image();
+            newSprite.src = canvas.toDataURL();
+
+            sprite.image = newSprite;
+
+
+            Renderer.render(
+                sprite,
+                this.x,
+                this.y,
+                this.orientation,
+                state == 1 ? 2 : 1,
+            );
+
+        } else {
+
+            Renderer.render(
+                AssetManager.getSpriteImage( "entities", this.sx + this.lastFrame, this.sy ),
+                this.x,
+                this.y,
+                this.orientation,
+                state == 1 ? 2 : 1,
+            );
+
+        }
 
         if ( this.lastUpdate + 200 < Date.now() ) {
 
@@ -90,7 +134,9 @@ class Entity {
     async act() {
 
         game.engine.lock();
-        this.type === "player" ? setTimeout( ( ) => ( this.turn = true ), 120 ) : ( this.turn = true );
+        this.type === "player"
+            ? setTimeout( ( ) => ( this.turn = true ), 120  )
+            : ( this.turn = true );
 
     }
 
@@ -117,6 +163,8 @@ class Entity {
     }
 
     move( direction ) {
+
+        console.time( "move" );
 
         let result   = false
           , newGridX = this.gridX
@@ -153,6 +201,9 @@ class Entity {
             this.gridY = newGridY;
             result = true;
         }
+
+        console.timeEnd( "move" );
+
         return result;
     }
 
@@ -180,9 +231,76 @@ class Entity {
         return [ this.gridX, this.gridY ];
     }
 
+    attack( target ) {
+
+        target.hasTakeDamage = true;
+
+        // —— Calculate the relative position of the target
+        const [ targetX  , targetY   ] = target.getPosition()
+            , [ attackerX, attackerY ] = this.getPosition()
+
+            , relativeX = attackerX - targetX
+            , relativeY = attackerY - targetY;
+
+        // —— Reverse if target.type == "player"
+        if ( target.type == "player" ) {
+            if ( relativeX > 0 )
+                this.x -= 10;
+            else if ( relativeX < 0 )
+                this.x += 10;
+            else if ( relativeY > 0 )
+                this.y -= 10;
+            else if ( relativeY < 0 )
+                this.y += 10;
+        } else {
+
+            // —— Calculate the direction of the attack ( move px )
+            if ( relativeX > 0 )
+                this.x += 10;
+            else if ( relativeX < 0 )
+                this.x -= 10;
+            else if ( relativeY > 0 )
+                this.y += 10;
+            else if ( relativeY < 0 )
+                this.y -= 10;
+
+        }
+
+        // —— Block game engine for 200ms
+        game.engine.lock();
+        setTimeout( ( ) => {
+
+            target.hasTakeDamage = false;
+
+            if ( target.setHP( target.HP - this.ATK ) <= 0 ) {
+
+                target.die( );
+
+                if ( this.type == "player" )
+                    this.reward( target );
+
+            }
+
+            game.engine.unlock();
+
+        }, 200 );
+
+    }
+
     die() {
         game.entities.splice( game.entities.indexOf( this ), 1 );
         game.scheduler.remove( this );
+    }
+
+    setHP( HP ) {
+
+        this.HP = HP;
+
+        if ( this.HP > this.maxHP )
+            this.HP = this.maxHP;
+
+        return this.HP;
+
     }
 
 }
