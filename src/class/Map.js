@@ -21,12 +21,15 @@ class Map {
     */
     generate( width, height ) {
 
-        this.digger = new ROT.Map.Digger( width, height );
+        const timeStart = performance.now();
+
+        this.digger = new ROT.Map.Digger( width, height, { } );
 
         let w, h;
 
         this.digger.create( ( x, y, wall ) => {
 
+            this.data[ `${ x },${ y }` ] = wall;
             if ( wall ) return;
 
             w = Math.max( w, x );
@@ -45,7 +48,7 @@ class Map {
                 if ( _ID in this.tiles )
                     continue;
 
-                // —— Walls ————————————————————————————————————————————————————————————————————————————————————————————
+                // —— Walls ———————————————————————————————————————————————————————————————————————————————————————————
 
                 // — Left
                 if ( this.tiles[ `${ x + 1 },${ y }`] && !this.tiles[ `${ x + 1 },${ y }`].blocking )
@@ -63,92 +66,46 @@ class Map {
                 if ( this.tiles[ `${ x },${ y - 1 }` ] && !this.tiles[ `${ x },${ y - 1 }` ].blocking )
                     this.tiles[ _ID ] = new Tile( Math.floor( Math.random() * 4 ) + 1, 4 , x * 16, y * 16, true );
 
-                // —— Corners ———————————————————————————————————————————————————————————————————————————————————————————
-
-
-                // // — Top Right Corner
-                // if ( this.tiles[ `${ x - 1 },${ y + 1 }` ] && !this.tiles[ `${ x - 1 },${ y + 1 }` ].blocking &&
-                //     this.tiles[ `${ x },${ y + 1 }` ] && !this.tiles[ `${ x },${ y + 1 }` ].blocking &&
-                //     this.tiles[ `${ x - 1 },${ y }` ] && !this.tiles[ `${ x - 1 },${ y }` ].blocking )
-                //     this.tiles[ _ID ] = new Tile( 9, 9, x * 16, y * 16, true );
-
-
-
-
-
-                // if ( this.tiles[ `${ x + 1 },${ y }` ] && this.tiles[ `${ x },${ y + 1 }` ] && !this.tiles[ `${ x + 1 },${ y }` ].blocking && !this.tiles[ `${ x },${ y + 1 }` ].blocking )
-
-                //     this.tiles[ _ID ] = new Tile( 5, 4, x * 16, y * 16, true );
-
-                // —— Other specific modifiers ———————————————————————————————————————————————————————————————————————————
-
-                // — Dual sided walls
-
-                console.log( this.tiles[ `${x},${y}` ] )
-
-                // if ( this.tiles[ `${x},${y}` ]?.blocking
-                //     && !this.tiles[ `${x-1},${y}` ]?.blocking
-                //     && !this.tiles[ `${x+1},${y}` ]?.blocking
-                // ) {
-
-
-                //     if ( !this.tiles[ `${x},${y+1}` ]?.blocking ) {
-                //         this.tiles[_ID] = new Tile( 1, 0, x * 16, y * 16, true);
-                //     } else {
-                //         const selected = [ [ 0, 10 ], [ 0, 11 ], [ 0, 12 ], [ 0, 13 ] ][ Math.floor( Math.random() * 4 ) ];
-                //         this.tiles[_ID] = new Tile( ...selected, x * 16, y * 16, true);
-                //     }
-
-                // }
-
-//                         if ( this.tiles[ `${x},${y-1}` ] && !this.tiles[ `${x},${y+1}` ].blocking ) {
-//                             this.tiles[id] = new Tile( 1, 0, x * 16, y * 16, true);
-//                         } else {
-//                             const selected = [ [ 0, 10 ], [ 0, 11 ], [ 0, 12 ], [ 0, 13 ] ][ Math.floor( Math.random() * 4 ) ];
-//                             this.tiles[id] = new Tile( ...selected, x * 16, y * 16, true);
-//                         }
-
-//                     }
-
             }
         }
 
+        // —— Corners —————————————————————————————————————————————————————————————————————————————————————————————————
         for ( let x = width + 1; x >= 0; x-- ) {
             for ( let y = height + 1; y >= 0; y-- ) {
 
-                // Get corners and edges
-                const id = `${x},${y}`;
+                // —— Get corners and edges
+                const id = `${ x },${ y }`;
 
                 if ( !this.tiles[ id ]) {
 
-                    if ( this.tiles[ `${x - 1},${y - 1}` ] && !this.tiles[ `${x - 1},${y - 1}` ].blocking )
-                        this.tiles[id] = new Tile( 5, 4, x * 16, y * 16, true);
+                    if ( this.tiles[ `${ x - 1 },${ y - 1 }` ] && !this.tiles[ `${ x - 1 },${ y - 1 }` ].blocking )
+                        this.tiles[ id ] = new Tile( 5, 4, x * 16, y * 16, true );
 
-                    if ( this.tiles[ `${x + 1},${y - 1}` ] && !this.tiles[ `${x + 1},${y - 1}` ].blocking )
-                        this.tiles[id] = new Tile( 0, 4, x * 16, y * 16, true);
+                    if ( this.tiles[ `${ x + 1 },${ y - 1 }` ] && !this.tiles[ `${ x + 1 },${ y - 1 }` ].blocking )
+                        this.tiles[ id ] = new Tile( 0, 4, x * 16, y * 16, true );
 
-                    if ( this.tiles[ `${x - 1},${y + 1}` ] && !this.tiles[ `${x - 1},${y + 1}` ].blocking ) {
+                    if ( this.tiles[ `${ x - 1 },${y + 1}` ] && !this.tiles[ `${ x - 1 },${ y + 1 }` ].blocking ) {
                         const selected = [ [ 5, 0 ], [ 5, 1 ], [ 5, 2 ], [ 5, 3 ] ][ Math.floor( Math.random() * 4 ) ];
-                        this.tiles[id] = new Tile( ...selected, x * 16, y * 16, true);
+                        this.tiles[ id ] = new Tile( ...selected, x * 16, y * 16, true);
                     }
 
-                    if ( this.tiles[ `${x + 1},${y + 1}` ] && !this.tiles[ `${x + 1},${y + 1}` ].blocking ) {
+                    if ( this.tiles[ `${ x + 1 },${ y + 1 }` ] && !this.tiles[ `${x + 1},${y + 1}` ].blocking ) {
                         const selected = [ [ 0, 0 ], [ 0, 1 ], [ 0, 2 ], [ 0, 3 ] ][ Math.floor( Math.random() * 4 ) ];
-                        this.tiles[id] = new Tile( ...selected, x * 16, y * 16, true);
+                        this.tiles[id] = new Tile( ...selected, x * 16, y * 16, true );
                     }
 
                 } else {
 
-                    if ( this.tiles[ `${x},${y}` ] && this.tiles[ `${x},${y}` ].blocking
-                        && this.tiles[ `${x-1},${y}` ] && !this.tiles[ `${x-1},${y}` ].blocking
-                        && this.tiles[ `${x+1},${y}` ] && !this.tiles[ `${x+1},${y}` ].blocking
+                    if ( this.tiles[ `${ x },${ y }` ] && this.tiles[ `${ x },${ y }` ].blocking
+                        && this.tiles[ `${ x - 1 },${ y }` ] && !this.tiles[ `${ x - 1 },${ y }` ].blocking
+                        && this.tiles[ `${ x + 1 },${ y }` ] && !this.tiles[ `${ x + 1 },${ y }` ].blocking
                     ) {
 
-                        if ( this.tiles[ `${x},${y-1}` ] && !this.tiles[ `${x},${y+1}` ].blocking ) {
-                            this.tiles[id] = new Tile( 1, 0, x * 16, y * 16, true);
+                        if ( this.tiles[ `${ x },${ y-1 }` ] && !this.tiles[ `${ x },${ y + 1 }` ].blocking ) {
+                            this.tiles[ id ] = new Tile( 1, 0, x * 16, y * 16, true);
                         } else {
                             const selected = [ [ 0, 10 ], [ 0, 11 ], [ 0, 12 ], [ 0, 13 ] ][ Math.floor( Math.random() * 4 ) ];
-                            this.tiles[id] = new Tile( ...selected, x * 16, y * 16, true);
+                            this.tiles[ id ] = new Tile( ...selected, x * 16, y * 16, true );
                         }
 
                     }
@@ -158,19 +115,17 @@ class Map {
             }
         }
 
-        for( const door of this.getDoors() ) {
+        for( const d of this.getDoors() ) {
 
-            if( this.getTileAt( door[0] + 1, door[1] )?.[0]?.blocking && this.getTileAt( door[0] - 1, door[1] )?.[0]?.blocking )
-                this.tiles[ `door_${ door[0] },${ door[1] }` ] = new Door( 6, 3, door[0] * 16, ( door[1] * 16 ), true, true );
+            if( this.getTileAt( d[ 0 ] + 1, d[ 1 ] )?.[ 0 ]?.blocking && this.getTileAt( d[ 0 ] - 1, d[ 1 ] )?.[ 0 ]?.blocking )
+                this.tiles[ `door_${ d[ 0 ] },${ d[ 1 ] }` ] = new Door( 6, 3, d[ 0 ] * 16, ( d[ 1 ] * 16 ), true, true );
 
-            if( this.getTileAt( door[0], door[1] + 1 )?.[0]?.blocking && this.getTileAt( door[0], door[1] - 1 )?.[0]?.blocking )
-                this.tiles[ `door_${ door[0] },${ door[1] }` ] = new Door( 6, 4, door[0] * 16, ( door[1] * 16 ), true, true )
+            if( this.getTileAt( d[ 0 ], d[ 1 ] + 1 )?.[0]?.blocking && this.getTileAt( d[ 0 ], d[ 1 ] - 1 )?.[ 0 ]?.blocking )
+                this.tiles[ `door_${ d[ 0 ] },${ d[ 1 ] }` ] = new Door( 6, 4, d[ 0 ] * 16, ( d[ 1 ] * 16 ), true, true )
         }
 
         for (var i=0;i<10;i++) {
 
-            // Get random tile
-            console.log( this.tiles )
 
 
 
@@ -196,6 +151,10 @@ class Map {
         //         this.tiles[ `rock_${ x },${ y }` ] = new Tile( 8, 6, x * 16, ( y * 16 ), false, true );
 
         // }
+
+        const timeEnd = performance.now();
+        console.log( `Map generated in ${ timeEnd - timeStart }ms` );
+
 
     }
 
@@ -227,6 +186,7 @@ class Map {
     getRooms() {
         return this.digger.getRooms();
     }
+
 
 }
 
