@@ -5,6 +5,13 @@ class Camera {
         this.cy = parseInt( height / 2, 10 );
     }
 
+    setFocus( x, y ) {
+
+        this.x = x;
+        this.y = y;
+
+    }
+
 }
 
 export default Camera;

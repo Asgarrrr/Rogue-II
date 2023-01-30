@@ -1,17 +1,11 @@
-import {
-    Keyboard,
-    Renderer,
-    Camera,
-} from "../lib/index";
 
-import Player from "./player";
 import game from "./game";
 import Entity from "./entity";
 import AStar from "rot-js/lib/path/AStar";
 
 class TestEntity extends Entity {
-    constructor(sx, sy, x, y ) {
-        super(sx, sy, x, y, 0, true );
+    constructor( sx, sy, x, y ) {
+        super( sx, sy, x, y, 0, true );
     }
 
     update() {
@@ -38,14 +32,16 @@ class TestEntity extends Entity {
                 if ( moves.length > 0 ) {
 
                     const [ nextX, nextY ] = moves[ 0 ];
-                    const m = this.moveToCell( nextX, nextY );
+                    const direction = ( nextX > this.gridX ) ? "right" : ( nextX < this.gridX ) ? "left" : ( nextY > this.gridY ) ? "down" : "up";
+
+                    this.move( direction );
 
                 } else {
-                    game.player.takeDamage( 1 );
+
+                    this.attack( game.player );
                 }
 
                 this.turnDone();
-
 
             } else {
 
@@ -59,16 +55,6 @@ class TestEntity extends Entity {
 
         }
         super.update();
-    }
-
-    takeDamage( damage ) {
-
-        this.HP -= damage;
-
-        if ( this.HP <= 0 )
-            this.die();
-
-
     }
 
 }

@@ -1,11 +1,11 @@
 import Camera from "./camera";
+import game from "../class/game";
 
 class Renderer {
 
     display     = null;
     camera      = null;
     tileSize    = 16;
-
     /**
      * Creates the main game display
      * @param   { Number } width
@@ -24,6 +24,24 @@ class Renderer {
             context: mgd.getContext( "2d" )
         };
 
+        // this.display.canvas.addEventListener( "mousemove", ( e ) => {
+        //     this.mouse = {
+        //         x: e.clientX,
+        //         y: e.clientY
+        //     };
+        // } );
+
+
+        // // this.display.canvas.addEventListener( "mousemove", ( e ) => {
+
+        // //     const x = e.clientX
+        // //         , y = e.clientY;
+
+        // //     console.log( x / 16, y / 16)
+
+        // //     console.log( game.visible )
+        // // } );
+
         document.querySelector( "#game" ).appendChild( mgd );
 
         this.camera = new Camera( width, height );
@@ -41,7 +59,10 @@ class Renderer {
      * @returns { void }
      * @todo    Add better support for animations ( currently set inner entity class )
      */
-    render( spriteImage, x, y, orientation, state ) {
+    render( spriteImage, x, y, orientation, state, withGrid = false ) {
+
+        if ( !state )
+            return;
 
         const renderX = this.camera.cx - this.camera.x + x
             , renderY = this.camera.cy - this.camera.y + y;
@@ -53,9 +74,6 @@ class Renderer {
             renderY >= 0 - this.tileSize * 2 &&
             renderY <= this.display.canvas.height + this.tileSize * 2
         ) {
-
-            if ( !state )
-                return;
 
             this.display.context.globalAlpha = state === 1 ? 0.4 : 1;
 
@@ -95,6 +113,15 @@ class Renderer {
 
         }
     }
+
+    die() {
+
+        game.entities.splice( game.entities.indexOf( this ), 1 );
+        game.scheduler.remove( this );
+
+    }
+
+
 }
 
 export default new Renderer();
