@@ -22,6 +22,7 @@ class Tile {
 
         if ( state === 1 && !this.alreadyRendered )
             this.alreadyRendered = true;
+
         Renderer.render(
             AssetManager.getSpriteImage( "sprites", this.sx, this.sy ),
             this.x,
