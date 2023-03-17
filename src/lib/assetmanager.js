@@ -3,7 +3,7 @@
  * @class       AssetManager
  * @description AssetManager is a class that manages assets such as images, sounds, and data.
  */
-class AssetManager {
+ class AssetManager {
 
     images = new Map( );
 
@@ -15,6 +15,7 @@ class AssetManager {
      * @returns     {Promise}
      */
     loadImage( key, src ) {
+
         return new Promise( ( resolve, reject ) => {
 
             const image = new Image();
@@ -23,6 +24,7 @@ class AssetManager {
             image.src = src;
 
         });
+
     }
 
     /**
@@ -38,8 +40,8 @@ class AssetManager {
             image   : this.images.get( imageKey ),
             dx,
             dy,
-            width   : this.images.get(imageKey).width,
-            height  : this.images.get(imageKey).height
+            width   : this.images.get( imageKey ).width,
+            height  : this.images.get( imageKey ).height
         }
     }
 }

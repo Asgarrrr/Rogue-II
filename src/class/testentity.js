@@ -5,7 +5,7 @@ import AStar from "rot-js/lib/path/AStar";
 
 class TestEntity extends Entity {
     constructor( sx, sy, x, y ) {
-        super( sx, sy, x, y, 0, true );
+        super( sx, sy, x, y, 0, "monster", true );
     }
 
     update() {

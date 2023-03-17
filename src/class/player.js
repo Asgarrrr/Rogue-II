@@ -59,16 +59,25 @@ class Player extends Entity {
 
                 const m = this.move( this.direction );
 
-                if ( !m )
-                    return;
+                if ( m === false )
+                    return; // Invalid turn
 
-                if ( m === true ) {
+                if ( m !== true ) {
 
-                }
-                else if ( Array.isArray( m ) ) {
+                    if ( m instanceof Entity ) {
 
-                    if ( m[ 0 ] === "monster" )
-                        this.attack( m[ 1 ] );
+                        switch ( m.type ) {
+
+                            case "monster":
+                                this.attack( m )
+                                break;
+
+                            case "shop":
+                                m.hello( )
+                                break;
+
+                        }
+                    }
 
                 }
 

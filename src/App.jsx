@@ -74,29 +74,29 @@ function App() {
                             </div>
 
                             <div id="affliction">
-                                <img src="./malus/poison.png" />
+                                {/* <img src="./malus/poison.png" /> */}
                             </div>
 
                         </div>
                     </div>
 
-                    <div id="inventory">
+                    <div id="inventory" className="hidden">
                         <div id="inventory-header">
-                            <div class="inventory-header-slot1"> </div>
-                            <div class="inventory-header-slot2"> </div>
-                            <div class="inventory-header-slot3"> </div>
-                            <div class="inventory-header-slot4"> </div>
-                            <div class="inventory-header-slot5"> </div>
-                            <div class="inventory-header-slot6"> </div>
-                            <div class="inventory-header-slot7"> </div>
-                            <div class="inventory-header-slot8"> </div>
-                            <div class="inventory-header-slot9"> </div>
-                            <div class="inventory-header-slot10"> </div>
-                            <div class="inventory-header-slot11"> </div>
-                            <div class="inventory-header-slot12"> </div>
-                            <div class="inventory-header-slot13"> </div>
-                            <div class="inventory-header-slot14"> </div>
-                            <div class="inventory-header-slot15"> </div>
+                            <div className="inventory-header-slot1"> </div>
+                            <div className="inventory-header-slot2"> </div>
+                            <div className="inventory-header-slot3"> </div>
+                            <div className="inventory-header-slot4"> </div>
+                            <div className="inventory-header-slot5"> </div>
+                            <div className="inventory-header-slot6"> </div>
+                            <div className="inventory-header-slot7"> </div>
+                            <div className="inventory-header-slot8"> </div>
+                            <div className="inventory-header-slot9"> </div>
+                            <div className="inventory-header-slot10"> </div>
+                            <div className="inventory-header-slot11"> </div>
+                            <div className="inventory-header-slot12"> </div>
+                            <div className="inventory-header-slot13"> </div>
+                            <div className="inventory-header-slot14"> </div>
+                            <div className="inventory-header-slot15"> </div>
                         </div>
                     </div>
 

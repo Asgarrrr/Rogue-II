@@ -1,5 +1,5 @@
 import { defineConfig } from "vite"
-import backend from "./api.mjs"
+import backend from "./server/index.js"
 import react from "@vitejs/plugin-react"
 
 // https://vitejs.dev/config/

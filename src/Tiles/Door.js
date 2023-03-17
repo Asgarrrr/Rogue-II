@@ -1,6 +1,5 @@
 
 import {
-    Renderer,
     AssetManager
 } from "../lib/index";
 

@@ -10,14 +10,16 @@ import {
 
 import sprite from "../assets/Dungeon_Tileset.png";
 import entities from "../assets/entities.png";
+import dynamic from "../assets/dynAssets.png"
 import flag from "../assets/testTrap.png";
 
 import Minimap from "./minimap";
 import Map from "./map.js";
 import Player from "./player";
 import TestEntity from "./testentity";
+import Shop from "./shop"
 
-import WebSockets from "./WebSockets";
+import wsmanager from "../lib/wsmanager";
 
 class Game {
 
@@ -33,7 +35,7 @@ class Game {
 
         this.playerOPos = { x: null, y: null };
 
-        this.WebSockets = WebSockets;
+        this.WebSockets = new wsmanager();
     }
 
     async init( ) {
@@ -62,7 +64,7 @@ class Game {
         player.gridY = parseInt( tile.y / 16 );
         this.entities.push( player );
 
-        for ( let i = 0; i < 1; i++ ) {
+        for ( let i = 0; i < 3; i++ ) {
 
             // Create a new test entity, and place it in a random room
             const entity = new TestEntity( 0, [ 0, 2, 4, 6 ][ Math.floor( Math.random() * 4 ) ], 0, 0 );
@@ -78,6 +80,8 @@ class Game {
             this.entities.push( entity );
 
         }
+
+        this.entities.push( new Shop( 2, 0, 0, 0 ) );
 
         this.scheduler = new ROT.Scheduler.Simple();
 
@@ -101,6 +105,26 @@ class Game {
 
         } );
 
+        document.addEventListener( "keydown", ( e ) => {
+
+            if ( e.key === "i" ) {
+
+                if ( !document.getElementById( "inventory" ).classList.contains( "hidden" ) ) {
+                    document.getElementById( "inventory" ).classList.add( "hidden" );
+                    document.getElementById( "cover" ).classList.remove( "hidden" )
+                    return;
+                }
+
+                document.getElementById( "inventory" ).classList.remove( "hidden" );
+                document.getElementById( "cover" ).classList.add( "hidden")
+
+                console.log( player.inventory );
+
+
+            }
+
+        } );
+
     }
 
     /**
@@ -108,9 +132,12 @@ class Game {
      */
     async loadAssets() {
 
-        await AssetManager.loadImage( "sprites", sprite );
-        await AssetManager.loadImage( "entities", entities );
-        await AssetManager.loadImage( "flag", flag );
+        await Promise.all( [
+            AssetManager.loadImage( "sprites", sprite ),
+            AssetManager.loadImage( "entities", entities ),
+            AssetManager.loadImage( "flag", flag ),
+            AssetManager.loadImage( "dynamic", dynamic ),
+        ]);
 
     }
 

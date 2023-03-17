@@ -3,8 +3,9 @@ import game from "./game";
 
 class Entity {
 
-    constructor( sx, sy, x, y, map, hostile = false ) {
+    constructor( sx, sy, x, y, map, type, hostile = false ) {
 
+        this.type        = type;
         this.hostile     = hostile;
 
         // —— Map related properties
@@ -164,8 +165,6 @@ class Entity {
 
     move( direction ) {
 
-        console.time( "move" );
-
         let result   = false
           , newGridX = this.gridX
           , newGridY = this.gridY;
@@ -188,11 +187,11 @@ class Entity {
         }
 
         for ( let i = 0; i < game.entities.length; i++ )
-            if ( game.entities[i].gridX == newGridX && game.entities[i].gridY == newGridY )
-                return [ "monster", game.entities[i] ];
+            if ( game.entities[ i ].gridX == newGridX && game.entities[ i ].gridY == newGridY )
+                return game.entities[ i ];
 
         if ( game.map.tiles[ `door_${ newGridX },${ newGridY }` ]?.blocking ) {
-            game.map.tiles[`door_${ newGridX },${ newGridY }`].open();
+            game.map.tiles[ `door_${ newGridX },${ newGridY }` ].open();
             result = true;
         }
 
@@ -201,8 +200,6 @@ class Entity {
             this.gridY = newGridY;
             result = true;
         }
-
-        console.timeEnd( "move" );
 
         return result;
     }
@@ -232,6 +229,8 @@ class Entity {
     }
 
     attack( target ) {
+
+        console.log( "alp")
 
         target.hasTakeDamage = true;
 
