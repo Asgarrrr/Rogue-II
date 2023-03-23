@@ -1,5 +1,10 @@
-# Rogue II
+<h1>
+    Rogue II
+    <img
+        style="width: 40px; float: right; margin: -5px 0 0 0px;"
+        src="https://cdn.discordapp.com/attachments/853554346150461450/1087978589921759262/rogueChamp.gif"
+        alt="d[ o_0 ]b"
+    >
+</h1>
 
-Just a new stupid project using rot.js & Vite ( React ).
-
-![127 0 0 1_5173_ (1)](https://user-images.githubusercontent.com/36574651/200896345-54713c76-83b0-433b-addb-5596cb3ce734.png)
+`Rogue II` is a roguelike game written in Javascript. It is a work in progress ( and is above all a study project ) and is currently in a very early stage of development.
