@@ -59,9 +59,9 @@ class Game {
         this.player = player;
         const tile = Object.values( this.map.tiles )[ 0 ];
         player.x = tile.x;
-        player.gridX = parseInt( tile.x / 16 );
+        player.gridX = parseInt( tile.x / 16, 10 );
         player.y = tile.y;
-        player.gridY = parseInt( tile.y / 16 );
+        player.gridY = parseInt( tile.y / 16, 10 );
         this.entities.push( player );
 
         for ( let i = 0; i < 3; i++ ) {
@@ -74,9 +74,9 @@ class Game {
 
             // TODO: Check if the tile is walkable
             entity.x = ~~( Math.random() * ( _x2 - _x1 ) + _x1 ) * 16;
-            entity.gridX = parseInt( entity.x / 16 );
+            entity.gridX = parseInt( entity.x / 16, 10 );
             entity.y = ~~( Math.random() * ( _y2 - _y1 ) + _y1 ) * 16;
-            entity.gridY = parseInt( entity.y / 16 );
+            entity.gridY = parseInt( entity.y / 16, 10 );
             this.entities.push( entity );
 
         }

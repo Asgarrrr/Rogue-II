@@ -13,8 +13,8 @@ class Entity {
         this.sy          = sy;
         this.x           = x;
         this.y           = y;
-        this.gridX       = parseInt( x / 16 );
-        this.gridY       = parseInt( y / 16 );
+        this.gridX       = parseInt( x / 16, 10 );
+        this.gridY       = parseInt( y / 16, 10 );
         this.map         = map;
         this.direction   = null;
         this.orientation = null;
@@ -91,7 +91,7 @@ class Entity {
                 this.x,
                 this.y,
                 this.orientation,
-                state == 1 ? 2 : 1,
+                state === 1 ? 2 : 1,
             );
 
         } else {
@@ -101,7 +101,7 @@ class Entity {
                 this.x,
                 this.y,
                 this.orientation,
-                state == 1 ? 2 : 1,
+                state === 1 ? 2 : 1,
             );
 
         }
