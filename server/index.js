@@ -40,6 +40,38 @@ export default async function Server( ) {
             console.log( "— —— — disconnect ———————————————————————————————————————" )
         });
 
+
+        socket.on( "user:load", async ({ token }) => {
+
+            console.log( "— —— — user:load ———————————————————————————————————————" )
+
+            // —— Load the user from the database
+            //  — This is a workaround for the fact that Vite does not support dynamic imports
+            const User = mongoose.model( "user" );
+            const Session = mongoose.model( "session" );
+
+            // —— Find the session > the user
+            const session = await Session.findOne( { token } )
+
+            if ( !session )
+                return socket.emit( "user:load", { error: "Session not found" } );
+
+            const user = await User.findById( session.user );
+
+            if ( !user )
+                return socket.emit( "user:load", { error: "User not found" } );
+
+            // Check if the user has characters
+            const Character = mongoose.model( "character" );
+
+            const chars = await Character.find( { user: user._id } );
+
+            socket.emit( "user:load", { user, chars } );
+
+
+        });
+
+
         console.log( "— —— — new client ———————————————————————————————————————" )
         socketHandler( io, socket, mongoose );
 
