@@ -15,7 +15,7 @@ class GameLoop {
         this.last           = null;
         this.accumulator    = 0;
         this.fps            = 60;
-        this.delta          = 1e3 / this.fps;
+        this.delta          = 1000 / this.fps;
         this.step           = 1 / this.fps;
         this.update         = null;
         this.render         = null;
@@ -48,7 +48,7 @@ class GameLoop {
         this.last   = this.now
 
         // Prevent updating the game with a very large dt if the game were to lose focus and then regain focus later
-        if ( this.dt > 1e3 )
+        if ( this.dt > 1000 )
             return;
 
         this.accumulator += this.dt;
@@ -69,7 +69,7 @@ class GameLoop {
         this.renderTimeAverage = this.renderTimeArray.reduce( ( a, b ) => a + b ) / this.renderTimeArray.length;
 
         document.querySelector( "#stats" ).innerHTML = `
-            <div>FPS: ${Math.round( 1e3 / ( this.dt + renderTime ) )}</div>
+            <div>FPS: ${Math.round( 1000 / ( this.dt + renderTime ) )}</div>
             <div>Render time: ${renderTime}ms (average: ${( this.renderTimeAverage )}ms)</div>
         `;
 
