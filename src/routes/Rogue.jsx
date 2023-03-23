@@ -7,24 +7,56 @@ import {
 
 export default function Rogue({ socket }) {
 
+    const [ user, setUser ] = useState({});
+    const [ character, setCharacter ] = useState( null );
+
+
     useEffect(() => {
 
         // Exchange token for user data
         socket.emit( "user:load", { token: localStorage.getItem( "bearer" ) });
 
-    }, [socket])
+        // Listen for user data
+        socket.on( "user:load", ( { user, chars } ) => {
+            setUser( user );
+            setCharacter( chars );
+        });
+
+    }, [ socket ])
+
+    useEffect(() => {
+
+        if ( !character )
+            return;
+        console.log( character );
+
+    }, [ character ])
 
 
+    if ( !character )
+        return <div>Loading...</div>
 
-    // useEffect(() => {
-    //     Game.init();
-    // }, [])
+    if ( character.length === 0 )
+        return createCharacter();
 
+    return (
+        <div>
+            <h1>Rogue</h1>
+        </div>
+    )
 
 }
 
 
+function createCharacter( ) {
 
+    return (
+        <div>
+            <h1>Create Character</h1>
+        </div>
+    )
+
+}
 
 
     // useEffect(() => {
