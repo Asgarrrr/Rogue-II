@@ -1,111 +1,56 @@
-import {
-    useState, useEffect
-} from 'react'
-import './App.css'
-import "rot-js"
-import Game from "./class/game";
-import "./App.css"
+import { useState, useEffect, lazy, Suspense } from 'react'
+
+import RequireAuth from "./components/RequireAuth";
+import { AuthProvider } from "./context/auth";
+import { BrowserRouter as Router, Routes, Route, useParams } from "react-router-dom";
+
+
+import Login from "./routes/Login";
+
+// Suspense is a new feature in React 16.6 that allows you to defer rendering of components until some condition is met.
+// Suspense loading of the Rogue component
+const Rogue = lazy( ( ) => import( "./routes/Rogue" ) );
+
+import { io } from 'socket.io-client';
 
 function App() {
 
-    useEffect(() => {
-        Game.init();
-    }, [])
+    const [ socket, setSocket ] = useState( null );
 
-    console.clear();
-    console.group("%c   ROGUE II", [
-        "font-size: 16px;",
-        "background-image: url( data:image/gif;base64,R0lGODlhEAAQAPIAAAAAACUTGjc3N4laRb9wTZCRnq3BzwAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQBFAAAACwAAAAAEAAQAAADSAi63A4hyqeCKRiHZ4ucTqAZVhkWZGo2ouG+ZChq4sYGwkzbFYrnJEFs0cLNDMIIcRARAI1MYpNAKFWVRKf2l2Npc0wnj/JIAAAh+QQBFAAAACwAAAAAEAAQAAADSQi63A4hyqeCKRiHZ4ucTqAZVhkWZGo2ouG+JBsIWeRtS2vXcY7OgpKAhIMMIkGMIXjMRQYDQkkaYQmuwmLuygUGrd0jlkIGJAAAIfkEARQAAAAsAAAAABAAEAAAA0sIutG+UAVTag1RUvdyuMYkekVojtFnrGzofdeHpYEAx7NU1naI6iFbxSDwMQYNQa8WQDIagwFBNG2klDZejoG1TZVbAA+MBGfOkQQAIfkEARQAAAAsAAAAABAAEAAAA0kIutG+UAVTag1RUvdyuMYkekVojtFnrGzofdeHeQIcv0Iu1rNUBrWKQeBi/HQhYoMxaAwIImiT0cjxdEuGtQbVpbaBpjdDhiQAADs= );",
-        "background-repeat: no-repeat;",
-        "background-size: 16px 16px;",
-        "background-color: #25131A;",
-        "background-position: 32px 17px;",
-        "padding: 16px 32px;",
-    ].join(";"));
-
-    console.group( "Author");
-    console.log( "Jérémy Caruelle" );
-    console.log( "Twitter : https://twitter.com/Asgarrrr" );
-    console.log( "GitHub  : https://github.com/Asgarrrr" );
-    console.groupEnd();
-    console.group( "Stats for nerds" );
+    useEffect( ( ) => {
+        const newSocket = io( `http://${window.location.hostname}:3000` );
+        setSocket( newSocket );
+        newSocket.on( "connect", ( ) => {
+            console.log( "Connected to server" );
+        } );
+        return () => newSocket.close();
+    }, [ setSocket ] );
 
     return (
-        <>
-            <div id="app">
-                <div id="game">
-                    <div id="cover">
-                        <div id="test"></div>
-                        <div id="cover-logo">
-                            <div id="slot-1">
-                                <img src="./pouch.png" />
-                                <span>I</span>
-                            </div>
-                            <div id="slot-2">
-                                <span>D</span>
-                            </div>
-                            <div id="slot-3">
-                                <span>O</span>
-                            </div>
-                            <div id="slot-4">
-                                <span>U</span>
-                            </div>
-                        </div>
-                        <div id="indicator">
+        <Router>
+            <AuthProvider socket={ socket }>
+                <Routes>
+                    <Route path="/" element={ <p> main </p> } />
+                    <Route path="/rogue" element={
+                        <RequireAuth>
+                            <Suspense fallback={ <div>Loading...</div> }>
+                                <Rogue socket={socket} />
+                            </Suspense>
+                        </RequireAuth> }
+                    />
+                    <Route path="/test" element={
+                        <RequireAuth>
+                            <p>Test</p>
+                        </RequireAuth>
+                    } />
 
-                            <svg width="0" height="0">
-                                <clipPath id="clipPath">
-                                    <polygon points="3 3, 7 0, 17 10, 330 10, 330 16, 15 15, 0 0"></polygon>
-                                </clipPath>
-                            </svg>
+                    <Route path="/login" element={ <Login socket={ socket } /> } />
 
-                            <div id="HP">
-                                <img id="HPHearth" src="./hearth.svg" alt="" />
-
-                                <div id="HPValue">
-                                    <span id="HPCurrent">--</span> / <span id="HPMax">--</span>
-                                </div>
-                                <div id="HPBar"></div>
-                            </div>
-
-                            <div id="XP">
-                                <span id="XPData">Lvl. <span id="XPLvl">--</span></span>
-                                <div id="XPBar"></div>
-                            </div>
-
-                            <div id="affliction">
-                                {/* <img src="./malus/poison.png" /> */}
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div id="inventory" className="hidden">
-                        <div id="inventory-header">
-                            <div className="inventory-header-slot1"> </div>
-                            <div className="inventory-header-slot2"> </div>
-                            <div className="inventory-header-slot3"> </div>
-                            <div className="inventory-header-slot4"> </div>
-                            <div className="inventory-header-slot5"> </div>
-                            <div className="inventory-header-slot6"> </div>
-                            <div className="inventory-header-slot7"> </div>
-                            <div className="inventory-header-slot8"> </div>
-                            <div className="inventory-header-slot9"> </div>
-                            <div className="inventory-header-slot10"> </div>
-                            <div className="inventory-header-slot11"> </div>
-                            <div className="inventory-header-slot12"> </div>
-                            <div className="inventory-header-slot13"> </div>
-                            <div className="inventory-header-slot14"> </div>
-                            <div className="inventory-header-slot15"> </div>
-                        </div>
-                    </div>
-
-                </div>
-                <div id="stats"></div>
-            </div>
-        </>
-
-    )
+                    <Route path="*" element={ <div>404</div> } />
+                </Routes>
+            </AuthProvider>
+        </Router>
+    );
 
 }
 export default App
