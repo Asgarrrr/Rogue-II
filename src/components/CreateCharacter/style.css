@@ -1,0 +1,9 @@
+.CreateCharacter {
+    background-image: url( "https://cdn.discordapp.com/attachments/1071595350437134456/1088773456998436894/GUI_Hawker_Base.png" );
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 344px;
+    height: 588px;
+
+}
