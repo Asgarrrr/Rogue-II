@@ -5,7 +5,14 @@ module.exports = {
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
     theme: {
-        extend: {},
+        extend: {
+            colors: {
+                rogue: "#25131A",
+            },
+            fontFamily: {
+                "m5x7": [ "m5x7", "monospace" ],
+            },
+        },
     },
     plugins: [],
 }
