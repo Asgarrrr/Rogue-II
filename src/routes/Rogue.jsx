@@ -54,7 +54,7 @@ function createCharacter() {
     return (
         <div className="w-full h-full bg-rogue text-white font-m5x7">
 
-            <div className="w-full h-full flex justify-center items-center">
+            <div className="w-full h-full flex justify-center items-center relative top-[-10%]" >
                 <CreateCharacter />
             </div>
 

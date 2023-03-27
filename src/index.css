@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 /* Reset css */
 * {
     box-sizing: border-box;
@@ -14,6 +13,10 @@
 #root {
     height: 100vh;
     width: 100vw;
+}
+
+.bonfires {
+    width: 90%;
 }
 
 .bonfires::after,

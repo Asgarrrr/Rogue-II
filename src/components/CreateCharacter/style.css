@@ -3,7 +3,13 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    width: 344px;
-    height: 588px;
+    max-width: 344px;
+    max-height: 588px;
+    min-width: 344px;
+    min-height: 508px;
+}
 
+.character__class__image {
+    width: 60px;
+    height: 60px;
 }
