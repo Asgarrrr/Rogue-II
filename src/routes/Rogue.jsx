@@ -14,10 +14,10 @@ export default function Rogue({ socket }) {
 
     useEffect(() => {
 
-        // Exchange token for user data
+        // —— Exchange token for user data
         socket.emit( "user:load", { token: localStorage.getItem( "bearer" ) });
 
-        // Listen for user data
+        // —— Listen for user data
         socket.on( "user:load", ( { user, chars } ) => {
             setUser( user );
             setCharacter( chars );
@@ -29,6 +29,7 @@ export default function Rogue({ socket }) {
 
         if ( !character )
             return;
+
         console.log( character );
 
     }, [ character ])
@@ -38,7 +39,7 @@ export default function Rogue({ socket }) {
         return <div>Loading...</div>
 
     if ( character.length === 0 )
-        return createCharacter();
+        return createCharacter( socket );
 
     return (
         <div>
@@ -49,13 +50,13 @@ export default function Rogue({ socket }) {
 }
 
 
-function createCharacter() {
+function createCharacter( socket ) {
 
     return (
         <div className="w-full h-full bg-rogue text-white font-m5x7">
 
             <div className="w-full h-full flex justify-center items-center relative top-[-10%]" >
-                <CreateCharacter />
+                <CreateCharacter socket={ socket } />
             </div>
 
 
