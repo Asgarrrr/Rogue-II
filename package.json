@@ -6,8 +6,8 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "preview": "vite preview",
-        "start": "npx http-server ./dist -g --no-dotfiles",
+        "start:client": "vite preview",
+        "start:server": "node server/index.js",
         "test": "mocha --parallel --recursive ./test"
     },
     "dependencies": {
