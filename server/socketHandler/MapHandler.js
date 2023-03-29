@@ -1,4 +1,4 @@
-import Map from "../class/Map"
+import Map from "../class/Map.js"
 
 export default ( io, socket ) => {
 

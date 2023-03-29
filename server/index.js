@@ -5,21 +5,13 @@ import { createServer } from "http";
 import { Server as socketServer } from "socket.io";
 import mongoose from "mongoose";
 import { globSync } from "glob";
-import socketHandler from "./socketHandler/";
+import socketHandler from "./socketHandler/index.js";
 import path from "node:path";
 
-export default async function Server( ) {
+( async ( ) => {
 
-    // —— Load all models if they are not already loaded
-    //  — This is a workaround for the fact that Vite does not support dynamic imports
-    globSync( "./src/models/*.model.js" ).forEach( async ( file ) => {
-
-        const modelName = path.basename( file ).split( "." )[ 0 ];
-        // —— Load the model if it is not already loaded
-        if ( !mongoose.models[ modelName ] )
-            await import( `./src/models/${ modelName }.model.js` );
-
-    } );
+    // —— Load all mongoose models
+    globSync( "./src/models/*.model.js" ).forEach( ( file ) => import( path.resolve( file ) ) );
 
     // —— Connect to the database
     await mongoose.connect( process.env.MONGO_URI, {
@@ -77,15 +69,11 @@ export default async function Server( ) {
 
     });
 
-    httpServer.on( "error", ( error ) => {
-        // —— Handle errors; ignore the error if it is a "listen" error
-        //  — Probably because hot reloading is enabled
-        if ( error.syscall !== "listen" )
-            console.error( error );
-
-    });
+    httpServer.on( "listening", ( ) => {
+        console.log( "— —— — server started ———————————————————————————————————————" )
+    } );
 
     // —— Start the server
     httpServer.listen( 3000 );
 
-}
+} )( );
