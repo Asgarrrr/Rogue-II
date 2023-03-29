@@ -28,6 +28,11 @@ import path from "node:path";
     // —— Handle connections
     io.on( "connection", ( socket ) => {
 
+        socket.on( "ping", ( ) => {
+            console.log( "— —— — ping ———————————————————————————————————————" )
+            socket.emit( "pong" );
+        });
+
         console.log( "— —— — connection ———————————————————————————————————————" )
 
         socket.on( "disconnect", ( ) => {
