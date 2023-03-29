@@ -22,6 +22,7 @@ function App() {
         setSocket( newSocket );
         newSocket.on( "connect", ( ) => {
             console.log( "Connected to server" );
+            newSocket.emit( "ping", { message: "Hello from client" } );
         } );
         return () => newSocket.close();
     }, [ setSocket ] );
