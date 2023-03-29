@@ -18,7 +18,10 @@ function App() {
     const [ socket, setSocket ] = useState( null );
 
     useEffect( ( ) => {
-        const newSocket = io( import.meta.env.VITE_SERVER_URL );
+        const newSocket = io( import.meta.env.VITE_SERVER_URL, {
+            withCredentials: true,
+            transports: [ "websocket" ]
+        } );
         setSocket( newSocket );
         newSocket.on( "connect", ( ) => {
             console.log( "Connected to server" );
