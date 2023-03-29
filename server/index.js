@@ -82,6 +82,6 @@ import path from "node:path";
     });
 
     // —— Start the server
-    httpServer.listen( 3020 );
+    httpServer.listen( process.env.PORT || 3000 );
 
 } )( );
