@@ -73,7 +73,15 @@ import path from "node:path";
         console.log( "— —— — server started ———————————————————————————————————————" )
     } );
 
+    httpServer.on( "request", ( req, res ) => {
+        if ( req.url === "/" ) {
+            res.writeHead(200, { "Content-Type": "text/plain" });
+            res.write( ":]" );
+            res.end();
+        }
+    });
+
     // —— Start the server
-    httpServer.listen( 3000 );
+    httpServer.listen( 3020 );
 
 } )( );
