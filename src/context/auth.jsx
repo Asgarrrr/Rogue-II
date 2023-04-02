@@ -18,16 +18,20 @@ const reducer = ( state, { type, payload }) => {
     switch ( type ) {
 
         case "LOGIN":
+            console.log( "LOGIN" );
             return { ...state, authenticated: true, user: payload, };
 
         case "LOGOUT":
+            console.log( "LOGOUT" );
             localStorage.removeItem( "bearer" );
             return { ...state, authenticated: false, user: null, };
 
         case "POPULATE":
+            console.log( "POPULATE" );
             return { ...state, user: payload, ...state.user, ...payload, };
 
         case "STOP_LOADING":
+            console.log( "STOP_LOADING" );
             return { ...state, loading: false, };
 
         default:

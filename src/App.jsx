@@ -13,22 +13,14 @@ const Rogue = lazy( ( ) => import( "./routes/Rogue" ) );
 
 import { io } from 'socket.io-client';
 
+const socket = io( import.meta.env.VITE_SERVER_URL, {
+    withCredentials: true,
+    transports: [ "websocket" ]
+} );
+
 function App() {
 
-    const [ socket, setSocket ] = useState( null );
-
-    useEffect( ( ) => {
-        const newSocket = io( import.meta.env.VITE_SERVER_URL, {
-            withCredentials: true,
-            transports: [ "websocket" ]
-        } );
-        setSocket( newSocket );
-        newSocket.on( "connect", ( ) => {
-            console.log( "Connected to server" );
-            newSocket.emit( "ping", { message: "Hello from client" } );
-        } );
-        return () => newSocket.close();
-    }, [ setSocket ] );
+    // const [ token, setToken ] = React.useState( null );
 
     return (
         <Router>

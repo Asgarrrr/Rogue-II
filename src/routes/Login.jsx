@@ -1,6 +1,8 @@
-import { useEffect, useState, createRef } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { useEffect, useState, createRef, useContext } from "react";
+import { Link, Navigate, redirect, useNavigate } from "react-router-dom";
+import LoginForm from "../components/Login";
 
+import { useAuthDispatch, useAuthState } from "../context/auth";
 import ReCAPTCHA from "react-google-recaptcha";
 
 /**
@@ -14,7 +16,19 @@ export default function Login({ socket }) {
 
     const [ username, setUsername ] = useState( "test" )
         , [ password, setPassword ] = useState( "23W9J423W9J4" )
+        , [ token, setToken ] = useState( null )
         , [ error, setError ] = useState( null );
+
+    const dispatch = useAuthDispatch();
+    const { authenticated } = useAuthState();
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+
+        if ( authenticated )
+            navigate( "/rogue" );
+      }, [ authenticated ]);
 
     const RefCaptcha = createRef();
 
@@ -34,56 +48,35 @@ export default function Login({ socket }) {
 
     useEffect(() => {
 
-        socket?.on("login", (data) => {
-            if (data?.error)
-                setError(data.error);
+        socket.on( "login", ( { token, error } ) => {
 
-            if (data?.token) {
-                localStorage.setItem("bearer", data.token);
-                <Navigate to="/demo" />
-                console.log(
-                    localStorage.getItem("bearer")
-                )
+            if ( token ) {
+
+                localStorage.setItem( "bearer", token );
+                dispatch( "LOGIN", { "1": "2" } );
+
+
+            } else if ( error ) {
+
+                setError( error );
+
             }
+
         });
-
-        if ( !socket?.connected )
-            return;
-
-
-
-        return () => socket.close();
 
     }, [ socket ]);
 
     return (
 
-        <div className="testbg">
+        <div className="w-full h-full bg-rogue text-white font-m5x7">
 
-            <ReCAPTCHA
-                ref={ RefCaptcha }
-                sitekey={ import.meta.env.VITE_reCAPTCHA_PUBLIC_KEY }
-                size="invisible"
-            />
+            <div className="w-full h-full flex flex-col justify-center items-center relative top-[-10%]" >
+                <h1>Login</h1>
+                <LoginForm username={ username } setUsername={ setUsername } password={ password } setPassword={ setPassword } callback={ postLogin } />
+            </div>
 
-            <h1>Login</h1>
-            <div>
-                <label>Username</label>
-                <input type="text" value={username} onChange={e => {
-                    setUsername(e.target.value);
-                }} />
-            </div>
-            <div>
-                <label>Password</label>
-                <input type="password" value={password} onChange={e => {
-                    setPassword(e.target.value);
-                }} />
-            </div>
-            <div>
-                <button onClick={postLogin}>Login</button>
-            </div>
-            {error && <p>{error}</p>}
-            <Link to="/signup">Don't have an account?</Link>
+            <ReCAPTCHA ref={ RefCaptcha } sitekey={ import.meta.env.VITE_reCAPTCHA_PUBLIC_KEY } size="invisible" />
+            <div className="bonfires"></div>
         </div>
     );
 
