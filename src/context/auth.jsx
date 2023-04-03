@@ -18,20 +18,16 @@ const reducer = ( state, { type, payload }) => {
     switch ( type ) {
 
         case "LOGIN":
-            console.log( "LOGIN" );
             return { ...state, authenticated: true, user: payload, };
 
         case "LOGOUT":
-            console.log( "LOGOUT" );
             localStorage.removeItem( "bearer" );
             return { ...state, authenticated: false, user: null, };
 
         case "POPULATE":
-            console.log( "POPULATE" );
             return { ...state, user: payload, ...state.user, ...payload, };
 
         case "STOP_LOADING":
-            console.log( "STOP_LOADING" );
             return { ...state, loading: false, };
 
         default:
@@ -58,24 +54,22 @@ export const AuthProvider = ({ socket, children }) => {
 
                 const token = localStorage.getItem( "bearer" );
 
-                if ( !token)
+                if ( !token )
                     return dispatch( "STOP_LOADING" );
 
-                socket.emit("checkAuth", { token });
+                socket.emit( "user:checkAuth", { token });
 
-                socket.on("checkAuth", (data) => {
+                socket.on( "user:checkAuth", ( { user } ) => {
 
-                    console.log(data);
+                    if ( user ) {
 
-                    if ( data.user ) {
-
-                        dispatch("LOGIN", data.user);
+                        dispatch( "LOGIN", user );
                         dispatch( "STOP_LOADING" );
 
                     } else {
 
-                        localStorage.removeItem("bearer");
-                        dispatch("LOGOUT");
+                        localStorage.removeItem( "bearer" );
+                        dispatch( "LOGOUT" );
 
                     }
 
@@ -83,17 +77,16 @@ export const AuthProvider = ({ socket, children }) => {
 
             } catch ( err ) {
 
-                console.log(err);
+                console.log( err );
                 dispatch("LOGOUT");
 
             }
 
         }
 
-        if ( socket?.connected == false)
-            checkAuth();
+        checkAuth();
 
-    }, [ socket ]);
+    }, [ ]);
 
     return (
         <StateContext.Provider value={ state }>
