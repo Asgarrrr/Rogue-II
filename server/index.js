@@ -11,7 +11,12 @@ import path from "node:path";
 ( async ( ) => {
 
     // —— Load all mongoose models
-    globSync( "./src/models/*.model.js" ).forEach( ( file ) => import( path.resolve( file ) ) );
+    globSync( "./src/models/*.model.js" ).forEach( ( file ) => {
+
+        const modelName = path.basename( file ).split( "." )[ 0 ];
+        import( `../src/models/${ modelName }.model.js` );
+
+    } );
 
     // —— Connect to the database
     await mongoose.connect( process.env.MONGO_URI, {
@@ -28,50 +33,90 @@ import path from "node:path";
     // —— Handle connections
     io.on( "connection", ( socket ) => {
 
-        socket.on( "ping", ( ) => {
-            console.log( "— —— — ping ———————————————————————————————————————" )
-            socket.emit( "pong" );
-        });
-
         console.log( "— —— — connection ———————————————————————————————————————" )
 
         socket.on( "disconnect", ( ) => {
             console.log( "— —— — disconnect ———————————————————————————————————————" )
         });
 
+        socket.on( "character:create", async ( { token, hero } ) => {
 
-        socket.on( "user:load", async ({ token }) => {
+            // —— Check if token is valid, and hero is an object
 
-            console.log( "— —— — user:load ———————————————————————————————————————" )
+            if ( !token )
+                return socket.emit( "character:create", { error: "Token is missing" } );
 
-            // —— Load the user from the database
-            //  — This is a workaround for the fact that Vite does not support dynamic imports
-            const User = mongoose.model( "user" );
-            const Session = mongoose.model( "session" );
+            if ( !hero && typeof hero !== "object" )
+                return socket.emit( "character:create", { error: "Hero is missing" } );
 
-            // —— Find the session > the user
-            const session = await Session.findOne( { token } )
+            try {
 
-            if ( !session )
-                return socket.emit( "user:load", { error: "Session not found" } );
+                // —— Load the user from the database
+                const Session   = mongoose.model( "session" )
+                    , User      = mongoose.model( "user" );
 
-            const user = await User.findById( session.user );
+                // —— Find the session > the user
+                const { user: userSession } = await Session.findOne( { token } );
 
-            if ( !user )
-                return socket.emit( "user:load", { error: "User not found" } );
+                if ( !userSession )
+                    return socket.emit( "character:create", { error: "Session not found" } );
 
-            // Check if the user has characters
-            const Character = mongoose.model( "character" );
+                const user = await User.findOne( { _id: userSession } );
 
-            const chars = await Character.find( { user: user._id } );
+                if ( !user )
+                    return socket.emit( "character:create", { error: "User not found" } );
 
-            socket.emit( "user:load", { user, chars } );
+                // —— Validate the hero;
+                //  — Every stat must be a number, and the total cannot be higher than 15
+                const { name, _class, str, vit, def, dex } = hero;
+
+                if ( !name || typeof name !== "string" )
+                    return socket.emit( "character:create", { error: "Name is missing" } );
+
+                // —— Remove all non-alphanumeric characters
+                const nameRegex = /[^a-zA-Z0-9]/g;
+                if ( nameRegex.test( name ) )
+                    return socket.emit( "character:create", { error: "Name contains invalid characters" } );
+
+                if (   !str || typeof str !== "number"
+                    || !vit || typeof vit !== "number"
+                    || !def || typeof def !== "number"
+                    || !dex || typeof dex !== "number" )
+                    return socket.emit( "character:create", { error: "Stats are missing" } );
+
+                if ( str + vit + def + dex > 20 )
+                    return socket.emit( "character:create", { error: "Stats are too high" } );
+
+                // —— Create the character
+                const Character = mongoose.model( "character" );
+
+                const character = await new Character( {
+                    name,
+                    user: user._id,
+                    class: _class,
+                    strength: str,
+                    vitality: vit,
+                    defense: def,
+                    dexterity: dex,
+                } ).save( );
+
+                socket.emit( "character:create", { character } );
+
+            } catch ( err ) {
+
+                console.error( err );
+                socket.emit( "character:create", { error: "Something went wrong" } );
+
+            }
+
+            console.log( "character:create",
+                token,
+                hero
+            );
+
+        } );
 
 
-        });
-
-
-        console.log( "— —— — new client ———————————————————————————————————————" )
         socketHandler( io, socket, mongoose );
 
     });
