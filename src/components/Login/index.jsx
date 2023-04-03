@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import "./style.css";
 
 export default function Login({ username, setUsername, password, setPassword, callback, error }) {
@@ -23,7 +23,7 @@ export default function Login({ username, setUsername, password, setPassword, ca
     return (
         <div className="login z-[1]">
 
-            <div className="relative left-[-1]">
+            <div className="relative left-[-1px]">
                 <form>
 
                     <input type="text" maxLength="40" value={ username } onChange={ ( e ) => setUsername( e.target.value ) } placeholder="username" />
