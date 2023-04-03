@@ -1,5 +1,5 @@
 import { useEffect, useState, createRef, useContext } from "react";
-import { Link, Navigate, redirect, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import LoginForm from "../components/Login";
 
 import { useAuthDispatch, useAuthState } from "../context/auth";
@@ -36,7 +36,7 @@ export default function Login({ socket }) {
 
         await RefCaptcha.current.executeAsync();
 
-        socket.emit( "login", {
+        socket.emit( "user:login", {
             challenge: RefCaptcha.current.getValue(),
             username,
             password
@@ -48,7 +48,7 @@ export default function Login({ socket }) {
 
     useEffect(() => {
 
-        socket.on( "login", ( { token, error } ) => {
+        socket.on( "user:login", ( { token, error } ) => {
 
             if ( token ) {
 
