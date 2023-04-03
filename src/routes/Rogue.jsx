@@ -4,8 +4,6 @@ import {
 
 const CreateCharacter = lazy(() => import( "../components/CreateCharacter/" ) );
 
-
-
 export default function Rogue({ socket }) {
 
     const [ user, setUser ] = useState({});
