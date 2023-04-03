@@ -4,17 +4,21 @@ const characterSchema = new Schema({
 
     name: { type: String, required: true },
     user: { type: Schema.Types.ObjectId, ref: "user", required: true },
-
-    type: { type: String, required: true, enum: [ "warrior", "mage" ] },
+    class: { type: String, required: true, enum: [ 0, 1, 2 ] },
 
     // —— Stats
-    level       : { type: Number, default: 1   },
-    experience  : { type: Number, default: 0   },
-    health      : { type: Number, default: 100 },
-    mana        : { type: Number, default: 100 },
-    strength    : { type: Number, default: 10  },
-    dexterity   : { type: Number, default: 10  },
-    intelligence: { type: Number, default: 10  },
+    level: { type: Number, default: 1   },
+    experience: { type: Number, default: 0 },
+
+    health      : {
+        current: { type: Number, default: 15 },
+        max: { type: Number, default: 15 },
+    },
+
+    strength: { type: Number, default: 10 },
+    vitality: { type: Number, default: 10 },
+    defense: { type: Number, default: 10 },
+    dexterity: { type: Number, default: 10 },
 
     // —— Inventory
     inventory: { type: [ { type: Schema.Types.ObjectId, ref: "item" } ], default: [ ] },
@@ -29,7 +33,6 @@ const characterSchema = new Schema({
 
     // —— Timestamps
     createdAt: { type: Date, default: Date.now },
-
 
 });
 
