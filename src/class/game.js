@@ -13,7 +13,7 @@ import dynamic from "../assets/dynAssets.png"
 import flag from "../assets/testTrap.png";
 
 import Minimap from "./minimap";
-import Map from "./-Map.js";
+import Map from "./map.js";
 import Player from "./player";
 import TestEntity from "./testentity";
 import Shop from "./shop"
