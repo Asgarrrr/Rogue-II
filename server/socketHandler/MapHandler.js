@@ -1,4 +1,4 @@
-import Map from "../class/Map.js"
+import Map from "../class/-Map.js"
 import MapModel from "../../src/models/map.model.js";
 import CharacterModel from "../../src/models/character.model.js";
 import UserModel from "../../src/models/user.model.js";

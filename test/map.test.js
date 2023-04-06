@@ -1,6 +1,6 @@
 
 import assert from "assert";
-import { Map } from "../src/class/map.js";
+import { Map } from "../src/class/-Map.js";
 
 
 /* —— Test 1 ———————————————————————————————————————————————————————————————————
