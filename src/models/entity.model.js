@@ -45,6 +45,15 @@ const entitySchema = new Schema({
             type: Number,
             required: true
         }
+    },
+
+    sx: {
+        type: Number,
+        required: true
+    },
+    sy: {
+        type: Number,
+        required: true
     }
 
 });

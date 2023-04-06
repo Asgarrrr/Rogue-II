@@ -4,8 +4,7 @@ import {
     Renderer,
     AssetManager,
     GameLoop,
-    Keyboard,
-    Camera,
+    WSManager
 } from "../lib/index";
 
 import sprite from "../assets/Dungeon_Tileset.png";
@@ -36,8 +35,12 @@ class Game {
     }
 
     async init( {
-        hero
+        hero,
+        socket
     }) {
+
+        WSManager.init( socket );
+        WSManager.ping( );
 
         if ( !hero )
             alert( "No hero selected" );
@@ -52,88 +55,146 @@ class Game {
             update: this.update
         });
 
-        this.map = new Map();
-        this.map.generate( 30, 30 );
 
-        // Create a new player entity
-        const player = new Player(
-            hero,
-        );
-
-        this.player = player;
-        const tile = Object.values( this.map.tiles )[ 0 ];
-        player.x = tile.x;
-        player.gridX = parseInt( tile.x / 16, 10 );
-        player.y = tile.y;
-        player.gridY = parseInt( tile.y / 16, 10 );
-        this.entities.push( player );
-
-        for ( let i = 0; i < 3; i++ ) {
-
-            // —— Create a new test entity, and place it in a random room
-            const entity = new TestEntity( 0, [ 0, 2, 4, 6 ][ Math.floor( Math.random() * 4 ) ], 0, 0 );
-
-            entity.setMaxHP( 10 );
-            entity.setHP( 10 );
-            entity.setStrength( 3 );
-            entity.setDefense( -1 );
-
-            const room = this.map.getRooms()[~~( Math.random() * this.map.getRooms().length )];
-
-            const { _x1, _x2, _y1, _y2 } = room;
-
-            // TODO: Check if the tile is walkable
-            entity.x = ~~( Math.random() * ( _x2 - _x1 ) + _x1 ) * 16;
-            entity.gridX = parseInt( entity.x / 16, 10 );
-            entity.y = ~~( Math.random() * ( _y2 - _y1 ) + _y1 ) * 16;
-            entity.gridY = parseInt( entity.y / 16, 10 );
-            this.entities.push( entity );
-
-        }
-
-        // this.entities.push( new Shop( 2, 0, 0, 0 ) );
-
-        this.scheduler = new ROT.Scheduler.Simple();
-
-        for ( const entity of this.entities )
-            this.scheduler.add( entity, true );
-
-        this.engine = new ROT.Engine( this.scheduler );
-        this.engine.start();
-
-        GameLoop.start();
-
-        Renderer.display.canvas.addEventListener( "mousemove", ( e ) => {
-
-            const rect = Renderer.display.canvas.getBoundingClientRect();
-
-            // –– Get the mouse position relative to the canvas ( take into account the width and height of the canvas )
-            const x = ( e.clientX - rect.left ) / ( rect.right - rect.left ) * Renderer.display.canvas.width;
-            const y = ( e.clientY - rect.top ) / ( rect.bottom - rect.top ) * Renderer.display.canvas.height;
-
-            this.mouse = { x, y };
-
+        socket.emit( "map:askForMap", {
+            token   : localStorage.getItem( "bearer" ),
+            champID : hero._id
         } );
 
-        document.addEventListener( "keydown", ( e ) => {
+        socket.on( "map:askForMap", ( data ) => {
 
-            if ( e.key === "i" ) {
+            this.map = new Map();
+            this.map.generate( data );
 
-                if ( !document.getElementById( "inventory" ).classList.contains( "hidden" ) ) {
-                    document.getElementById( "inventory" ).classList.add( "hidden" );
-                    document.getElementById( "cover" ).classList.remove( "hidden" )
-                    return;
-                }
+            this.player = new Player( hero );
+            this.player.gridX = hero.position.x || 1;
+            this.player.gridY = hero.position.y || 1;
 
-                document.getElementById( "inventory" ).classList.remove( "hidden" );
-                document.getElementById( "cover" ).classList.add( "hidden")
+            this.player.x = this.player.gridX * 16;
+            this.player.y = this.player.gridY * 16;
 
-                console.log( player.inventory );
+            this.entities.push( this.player );
 
+            for( const entity in data.entities ) {
+
+                const {
+                    _id,
+                    position: { x, y }
+                } = data.entities[ entity ];
+
+                const _entity = new TestEntity( _id,  0, [ 0, 2, 4, 6 ][ Math.floor( Math.random() * 4 ) ], 0, 0 );
+
+                _entity.x       = x * 16;
+                _entity.gridX   = x;
+                _entity.y       = y * 16;
+                _entity.gridY   = y;
+
+                console.log( _entity )
+
+                this.entities.push( _entity );
 
             }
 
+            this.scheduler = new ROT.Scheduler.Simple();
+
+            for ( const entity of this.entities ) {
+
+                console.log( "Entity" );
+                this.scheduler.add( entity, true );
+
+            }
+
+            this.engine = new ROT.Engine( this.scheduler );
+            this.engine.start();
+
+            GameLoop.start();
+
+
+
         } );
+
+        // // this.map = new Map();
+        // // this.map.generate( 30, 30 );
+        //
+        // // Create a new player entity
+        // const player = new Player(
+        //     hero,
+        // );
+        //
+        // this.player = player;
+        // const tile = Object.values( this.map.tiles )[ 0 ];
+        // player.x = tile.x;
+        // player.gridX = parseInt( tile.x / 16, 10 );
+        // player.y = tile.y;
+        // player.gridY = parseInt( tile.y / 16, 10 );
+        // this.entities.push( player );
+        //
+        // for ( let i = 0; i < 3; i++ ) {
+        //
+        //     // —— Create a new test entity, and place it in a random room
+        //     const entity = new TestEntity( 0, [ 0, 2, 4, 6 ][ Math.floor( Math.random() * 4 ) ], 0, 0 );
+        //
+        //     entity.setMaxHP( 10 );
+        //     entity.setHP( 10 );
+        //     entity.setStrength( 3 );
+        //     entity.setDefense( -1 );
+        //
+        //     const room = this.map.getRooms()[~~( Math.random() * this.map.getRooms().length )];
+        //
+        //     const { _x1, _x2, _y1, _y2 } = room;
+        //
+        //     // TODO: Check if the tile is walkable
+        //     entity.x = ~~( Math.random() * ( _x2 - _x1 ) + _x1 ) * 16;
+        //     entity.gridX = parseInt( entity.x / 16, 10 );
+        //     entity.y = ~~( Math.random() * ( _y2 - _y1 ) + _y1 ) * 16;
+        //     entity.gridY = parseInt( entity.y / 16, 10 );
+        //     this.entities.push( entity );
+        //
+        // }
+        //
+        // // this.entities.push( new Shop( 2, 0, 0, 0 ) );
+        //
+        // this.scheduler = new ROT.Scheduler.Simple();
+        //
+        // for ( const entity of this.entities )
+        //     this.scheduler.add( entity, true );
+        //
+        // this.engine = new ROT.Engine( this.scheduler );
+        // this.engine.start();
+        //
+        // GameLoop.start();
+        //
+        // Renderer.display.canvas.addEventListener( "mousemove", ( e ) => {
+        //
+        //     const rect = Renderer.display.canvas.getBoundingClientRect();
+        //
+        //     // –– Get the mouse position relative to the canvas ( take into account the width and height of the canvas )
+        //     const x = ( e.clientX - rect.left ) / ( rect.right - rect.left ) * Renderer.display.canvas.width;
+        //     const y = ( e.clientY - rect.top ) / ( rect.bottom - rect.top ) * Renderer.display.canvas.height;
+        //
+        //     this.mouse = { x, y };
+        //
+        // } );
+        //
+        // document.addEventListener( "keydown", ( e ) => {
+        //
+        //     if ( e.key === "i" ) {
+        //
+        //         if ( !document.getElementById( "inventory" ).classList.contains( "hidden" ) ) {
+        //             document.getElementById( "inventory" ).classList.add( "hidden" );
+        //             document.getElementById( "cover" ).classList.remove( "hidden" )
+        //             return;
+        //         }
+        //
+        //         document.getElementById( "inventory" ).classList.remove( "hidden" );
+        //         document.getElementById( "cover" ).classList.add( "hidden")
+        //
+        //         console.log( player.inventory );
+        //
+        //
+        //     }
+        //
+        // } );
 
     }
 
@@ -164,7 +225,9 @@ class Game {
             , y = this.player.y / 16;
 
         // –– Relatively expensive operation, so only do it when the player moves
-        if ( ~~this.playerOPos.x != ~~x || ~~this.playerOPos.y != ~~y ) {
+        if ( ~~this.playerOPos.x !== ~~x || ~~this.playerOPos.y !== ~~y ) {
+
+            console.log( "Player moved" )
 
             this.visible = { };
 

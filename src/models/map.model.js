@@ -2,10 +2,13 @@ import { Schema, model } from "mongoose";
 
 const mapSchema = new Schema({
 
-    data: {
-        type: Object,
-        required: true
-    }
+    width   : Number,
+    height  : Number,
+    tiles   : Object,
+    data    : Object,
+    doors   : Array,
+    stairs  : Array,
+    rooms   : Array,
 
 });
 

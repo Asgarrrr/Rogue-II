@@ -3,7 +3,7 @@ import game from "./game";
 
 class Entity {
 
-    constructor( sx, sy, x, y, map, type, hostile = false ) {
+    constructor( sx, sy, x, y, type, hostile = false ) {
 
         this.type        = type;
         this.hostile     = hostile;
@@ -13,9 +13,8 @@ class Entity {
         this.sy          = sy;
         this.x           = x;
         this.y           = y;
-        this.gridX       = parseInt( x / 16, 10 );
-        this.gridY       = parseInt( y / 16, 10 );
-        this.map         = map;
+        this.gridX       = parseInt( x, 10 ) / 16;
+        this.gridY       = parseInt( y, 10 ) / 16;
         this.direction   = null;
         this.orientation = null;
 

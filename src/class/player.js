@@ -4,7 +4,7 @@ import {
 } from "../lib/index";
 
 import Entity from "./entity";
-
+import { WSManager } from "../lib/index";
 import game from "./game";
 
 /**
@@ -25,11 +25,13 @@ class Player extends Entity {
         defense,
         dexterity,
         experience,
-        _id: id,
+        _id: ID,
         class: _class,
     }) {
 
         super( 0, 8 + parseInt( _class ), 16, 0 );
+
+        this.ID         = ID;
 
         this.HP         = HP;
         this.maxHP      = maxHP;
@@ -100,7 +102,7 @@ class Player extends Entity {
                         }
                     }
 
-                }
+                } else WSManager.playerMove( this.ID, this.gridX, this.gridY );
 
                 this.turnDone();
 

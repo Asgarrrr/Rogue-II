@@ -31,6 +31,11 @@ const characterSchema = new Schema({
         feet: { type: Schema.Types.ObjectId, ref: "item" },
     },
 
+    currentMap: { type: Schema.Types.ObjectId, ref: "map" },
+    position: {
+        x: { type: Number, required: true, default: 1 },
+        y: { type: Number, required: true, default: 1 }
+    },
     // —— Timestamps
     createdAt: { type: Date, default: Date.now },
 

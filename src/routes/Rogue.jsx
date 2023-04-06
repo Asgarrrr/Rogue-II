@@ -17,7 +17,7 @@ export default function Rogue({ socket }) {
             token: localStorage.getItem( "bearer" )
         });
 
-        // —— Listen for user data
+        // —— Listen for user data
         socket.on( "user:load", ( { user, chars } ) => {
 
             setUser( user );
@@ -34,7 +34,10 @@ export default function Rogue({ socket }) {
 
         import( "../class/game" ).then( ( { default: Game } ) => {
 
-            Game.init({ hero: character });
+            Game.init({
+                hero: character,
+                socket: socket
+            });
 
         });
 
