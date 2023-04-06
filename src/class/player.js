@@ -24,7 +24,7 @@ class Player extends Entity {
         vitality,
         defense,
         dexterity,
-        experience,
+        experience = 0,
         _id: ID,
         class: _class,
     }) {
@@ -40,6 +40,7 @@ class Player extends Entity {
         this.defense    = defense;
         this.dexterity  = dexterity;
 
+        console.log( "dede", this.strength )
 
         this.direction  = null;
         this.type       = "player";
@@ -75,8 +76,6 @@ class Player extends Entity {
                 this.direction = "down";
             else if ( Keyboard.pressed( " " ) )
                 return this.turnDone();
-            else if ( Keyboard.pressed( "$" ) )
-                return this.die();
 
             if ( this.direction ) {
 
@@ -124,7 +123,7 @@ class Player extends Entity {
      * @see         Entity.die
      */
     die() {
-        // super.die();
+        super.die();
         game.gameOver();
     }
 
@@ -138,6 +137,7 @@ class Player extends Entity {
         document.getElementById( "HPBar" ).style.background = `linear-gradient(90deg, #992020 ${( ( this.HP / this.maxHP ) * 100 )}%, #2f1a22 ${( ( this.HP / this.maxHP ) * 100 )}%)`;
         document.getElementById( "HPCurrent" ).innerHTML = this.HP;
         document.getElementById( "HPMax" ).innerHTML = this.maxHP;
+        return this.HP;
     }
 
     setXP( xp ) {
@@ -147,9 +147,6 @@ class Player extends Entity {
         this.XP += xp;
 
         if ( this.level() > levelBefore ) {
-
-            // Block rendering
-
 
             document.getElementById( "XPLvl" ).innerHTML = this.level();
 
@@ -168,9 +165,9 @@ class Player extends Entity {
 
     reward( from ) {
 
-        console.log( "Rewarding player" );
-
-        this.setXP( 60 );
+        // Give between 50 and 100 XP
+        this.setXP( ~~( Math.random() * 50 ) + 50 );
+        WSManager.playerReward( this.ID, this.XP );
 
     }
 

@@ -91,7 +91,7 @@ class Map {
                     ) {
 
                         if ( this.tiles[ `${ x },${ y-1 }` ] && !this.tiles[ `${ x },${ y + 1 }` ][ 4 ] ) {
-                            this.tiles[ id ] = [ 1, 0, x * 16, y * 16, true];
+                            this.tiles[ id ] = [ 1, 0, x * 16, y * 16, true ];
                         } else {
                             const selected = [ [ 0, 10 ], [ 0, 11 ], [ 0, 12 ], [ 0, 13 ] ][ ~~( Math.random() * 4 ) ];
                             this.tiles[ id ] = [ ...selected, x * 16, y * 16, true ];
@@ -104,6 +104,14 @@ class Map {
             }
         }
 
+        // —— Add exit add random room
+        const rooms = this.digger.getRooms();
+        const exitRoom = rooms[ ~~( Math.random() * rooms.length ) ];
+
+        // Get random position in room
+        const exitX = ~~( Math.random() * ( exitRoom.getRight() - exitRoom.getLeft() ) ) + exitRoom.getLeft();
+        const exitY = ~~( Math.random() * ( exitRoom.getBottom() - exitRoom.getTop() ) ) + exitRoom.getTop();
+
         // —— Save map
         return await new MapModel( {
             width,
@@ -112,6 +120,7 @@ class Map {
             data    : this.data,
             doors   : this.getDoors(),
             rooms   : this.getRooms(),
+            exit    : [ exitX, exitY ],
         } ).save();
 
     }

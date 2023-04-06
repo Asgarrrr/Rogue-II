@@ -1,4 +1,4 @@
-import { Renderer, AssetManager } from "../lib/index";
+import { Renderer, AssetManager, WSManager } from "../lib/index";
 import game from "./game";
 
 class Entity {
@@ -245,6 +245,10 @@ class Entity {
             result = true;
         }
 
+        if ( this.type === "player" && game.map.tiles[ `exit_${ newGridX },${ newGridY }` ] )
+            game.map.tiles[ `exit_${ newGridX },${ newGridY }` ].exit( );
+
+
         if ( !game.map.tiles[`${ newGridX },${ newGridY }`]?.blocking ) {
             this.gridX = newGridX;
             this.gridY = newGridY;
@@ -279,8 +283,6 @@ class Entity {
     }
 
     attack( target ) {
-
-        console.log( "alp")
 
         target.hasTakeDamage = true;
 
@@ -321,13 +323,26 @@ class Entity {
 
             target.hasTakeDamage = false;
 
+            console.log( this.strength )
+
             if ( target.setHP( target.HP - this.strength ) <= 0 ) {
 
-                target.die( );
+                target.die( )
+                WSManager.die(
+                    target.type === "player" ? "player" : "enemy",
+                    target.ID
+                );
 
-                if ( this.type == "player" )
-                    this.reward( target );
+                if ( target.type === "monster" )
+                    this.reward();
 
+            } else {
+
+                WSManager.attack(
+                    target.type === "player" ? "player" : "enemy",
+                    target.ID,
+                    target.HP,
+                )
             }
 
             game.engine.unlock();
@@ -339,6 +354,7 @@ class Entity {
     die() {
         game.entities.splice( game.entities.indexOf( this ), 1 );
         game.scheduler.remove( this );
+
     }
 
     setHP( HP ) {

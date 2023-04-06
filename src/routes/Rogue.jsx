@@ -8,7 +8,7 @@ const CreateCharacter = lazy(() => import( "../components/CreateCharacter/" ) );
 export default function Rogue({ socket }) {
 
     const [ user, setUser ]             = useState( {} );
-    const [ character, setCharacter ]   = useState( null );
+    const [ character, setCharacter ]   = useState( );
 
     useEffect(() => {
 
@@ -21,21 +21,25 @@ export default function Rogue({ socket }) {
         socket.on( "user:load", ( { user, chars } ) => {
 
             setUser( user );
-            setCharacter( chars );
+            setCharacter( chars ? [ chars ] : [ ] );
 
+        });
+
+        socket.on( "character:create", ( { character } ) => {
+            setCharacter( [ character ] );
         });
 
     }, [ ])
 
     useEffect( () => {
 
-        if ( !character )
+        if ( !character || !character.length )
             return;
 
         import( "../class/game" ).then( ( { default: Game } ) => {
 
             Game.init({
-                hero: character,
+                hero: character[ 0 ],
                 socket: socket
             });
 
@@ -44,16 +48,21 @@ export default function Rogue({ socket }) {
 
     }, [ character ])
 
+    const logout = ( ) => {
+        localStorage.removeItem( "bearer" );
+        window.location.reload();
+    }
+
 
     if ( !character )
         return <div>Loading...</div>
 
-    if ( character.length === 0 )
+    if ( !character.length )
         return (
             <div className="w-full h-full bg-rogue text-white font-m5x7">
 
                 <div className="w-full h-full flex justify-center items-center relative top-[-10%]" >
-                    <CreateCharacter socket={ socket } />
+                    <CreateCharacter socket={ socket } handler={ setCharacter }/>
                 </div>
 
                 <div className="bonfires"></div>
@@ -112,7 +121,15 @@ export default function Rogue({ socket }) {
 
                 </div>
             </div>
-            <div id="stats"></div>
+
+            <div className="absolute top-0 right-0 p-2 bg-gray-900 text-white flex items-center m-2 rounded">
+                <svg className="h-5 w-5 text-white mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" onClick={ logout }>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                </svg>
+                <div id="stats" className="w-14"></div>
+            </div>
+
+
         </div>
     )
 

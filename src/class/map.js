@@ -3,6 +3,7 @@ import Tile from "./tile";
 import Door from "../Tiles/Door";
 import game from "./game";
 import Chest from "../Tiles/Chest";
+import Exit from "../Tiles/exit.js";
 
 
 class Map {
@@ -15,7 +16,7 @@ class Map {
 
     }
 
-    generate( { width, height, tiles, data, doors, _id } ) {
+    generate( { width, height, tiles, data, doors, exit, _id } ) {
 
         this._ID   = _id;
         this.tiles = tiles;
@@ -40,6 +41,8 @@ class Map {
                 this.tiles[ `door_${ doors[ _ID ][ 0 ] },${ doors[ _ID ][ 1 ] }` ] = new Door( 6, 4, doors[ _ID ][ 0 ] * 16, ( doors[ _ID ][ 1 ] * 16 ), true, true )
 
         }
+
+        this.tiles[ `exit_${ exit[ 0 ] },${ exit[ 1 ] }` ] = new Exit( 9, 3, exit[ 0 ] * 16, exit[ 1 ] * 16, true );
 
     }
 

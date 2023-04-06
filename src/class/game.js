@@ -63,15 +63,29 @@ class Game {
 
         socket.on( "map:askForMap", ( data ) => {
 
+            // Reset the game
+            this.entities = [];
+            this.tiles = [];
+            this.map = null;
+            this.visible = { };
+            Minimap.clear();
+
             this.map = new Map();
             this.map.generate( data );
 
             this.player = new Player( hero );
-            this.player.gridX = hero.position.x || 1;
-            this.player.gridY = hero.position.y || 1;
-
+            this.player.gridX = data?.nsp?.x || hero.position.x || 1;
+            this.player.gridY = data?.nsp?.y || hero.position.y || 1;
             this.player.x = this.player.gridX * 16;
             this.player.y = this.player.gridY * 16;
+            this.player.maxHP = hero.health.max;
+            this.player.defense = hero.defense;
+            this.player.strength = hero.strength;
+            this.player.vitality = hero.vitality;
+            this.player.dexterity = hero.dexterity;
+            this.player.setXP( hero.experience );
+
+            this.player.setHP( hero.health.current );
 
             this.entities.push( this.player );
 
@@ -79,17 +93,19 @@ class Game {
 
                 const {
                     _id,
-                    position: { x, y }
+                    position: { x, y },
+                    sx, sy, health: { current: HP, max: MHP }
                 } = data.entities[ entity ];
 
-                const _entity = new TestEntity( _id,  0, [ 0, 2, 4, 6 ][ Math.floor( Math.random() * 4 ) ], 0, 0 );
+                const _entity = new TestEntity( _id, sx, sy, 0, 0 );
 
                 _entity.x       = x * 16;
                 _entity.gridX   = x;
                 _entity.y       = y * 16;
                 _entity.gridY   = y;
+                _entity.HP      = HP;
+                _entity.maxHP   = MHP;
 
-                console.log( _entity )
 
                 this.entities.push( _entity );
 
@@ -97,73 +113,17 @@ class Game {
 
             this.scheduler = new ROT.Scheduler.Simple();
 
-            for ( const entity of this.entities ) {
-
-                console.log( "Entity" );
+            for ( const entity of this.entities )
                 this.scheduler.add( entity, true );
-
-            }
 
             this.engine = new ROT.Engine( this.scheduler );
             this.engine.start();
 
-            GameLoop.start();
-
-
+            if( !GameLoop.accumulator )
+                GameLoop.start();
 
         } );
 
-        // // this.map = new Map();
-        // // this.map.generate( 30, 30 );
-        //
-        // // Create a new player entity
-        // const player = new Player(
-        //     hero,
-        // );
-        //
-        // this.player = player;
-        // const tile = Object.values( this.map.tiles )[ 0 ];
-        // player.x = tile.x;
-        // player.gridX = parseInt( tile.x / 16, 10 );
-        // player.y = tile.y;
-        // player.gridY = parseInt( tile.y / 16, 10 );
-        // this.entities.push( player );
-        //
-        // for ( let i = 0; i < 3; i++ ) {
-        //
-        //     // —— Create a new test entity, and place it in a random room
-        //     const entity = new TestEntity( 0, [ 0, 2, 4, 6 ][ Math.floor( Math.random() * 4 ) ], 0, 0 );
-        //
-        //     entity.setMaxHP( 10 );
-        //     entity.setHP( 10 );
-        //     entity.setStrength( 3 );
-        //     entity.setDefense( -1 );
-        //
-        //     const room = this.map.getRooms()[~~( Math.random() * this.map.getRooms().length )];
-        //
-        //     const { _x1, _x2, _y1, _y2 } = room;
-        //
-        //     // TODO: Check if the tile is walkable
-        //     entity.x = ~~( Math.random() * ( _x2 - _x1 ) + _x1 ) * 16;
-        //     entity.gridX = parseInt( entity.x / 16, 10 );
-        //     entity.y = ~~( Math.random() * ( _y2 - _y1 ) + _y1 ) * 16;
-        //     entity.gridY = parseInt( entity.y / 16, 10 );
-        //     this.entities.push( entity );
-        //
-        // }
-        //
-        // // this.entities.push( new Shop( 2, 0, 0, 0 ) );
-        //
-        // this.scheduler = new ROT.Scheduler.Simple();
-        //
-        // for ( const entity of this.entities )
-        //     this.scheduler.add( entity, true );
-        //
-        // this.engine = new ROT.Engine( this.scheduler );
-        // this.engine.start();
-        //
-        // GameLoop.start();
-        //
         // Renderer.display.canvas.addEventListener( "mousemove", ( e ) => {
         //
         //     const rect = Renderer.display.canvas.getBoundingClientRect();
@@ -175,7 +135,7 @@ class Game {
         //     this.mouse = { x, y };
         //
         // } );
-        //
+
         // document.addEventListener( "keydown", ( e ) => {
         //
         //     if ( e.key === "i" ) {
@@ -225,7 +185,7 @@ class Game {
             , y = this.player.y / 16;
 
         // –– Relatively expensive operation, so only do it when the player moves
-        if ( ~~this.playerOPos.x !== ~~x || ~~this.playerOPos.y !== ~~y ) {
+        if ( ~~this.playerOPos.x != ~~x || ~~this.playerOPos.y != ~~y ) {
 
             console.log( "Player moved" )
 
@@ -252,78 +212,79 @@ class Game {
         Minimap.update( this.visible, this.map.tiles, [ this.entities, this.player ] );
 
         // Draw squares around the mouse position ( only on floor tiles )
-        if ( this.mouse ) {
-
-            const x = ~~( this.mouse.x / 16 ) * 16;
-            const y = ~~( this.mouse.y / 16 ) * 16;
-
-            const renderX = Renderer.camera.cx - Renderer.camera.x
-                , renderY = Renderer.camera.cy - Renderer.camera.y;
-
-            const tile = this.map.getTileAt( ( x - renderX ) / 16, ( y - renderY ) / 16 )?.[ 0 ];
-
-            // if ( tile && !tile.blocking && this.visible[ `${ tile.x / 16 },${ tile.y / 16 }` ] ) {
-
-            //     Renderer.display.context.fillStyle = "rgba( 255, 255, 255, 0.5 )";
-            //     Renderer.display.context.fillRect( x, y, 16, 16 );
-
-            // }
-
-        }
+        // if ( this.mouse ) {
+        //
+        //     const x = ~~( this.mouse.x / 16 ) * 16;
+        //     const y = ~~( this.mouse.y / 16 ) * 16;
+        //
+        //     const renderX = Renderer.camera.cx - Renderer.camera.x
+        //         , renderY = Renderer.camera.cy - Renderer.camera.y;
+        //
+        //     const tile = this.map.getTileAt( ( x - renderX ) / 16, ( y - renderY ) / 16 )?.[ 0 ];
+        //
+        //     if ( tile && !tile.blocking && this.visible[ `${ tile.x / 16 },${ tile.y / 16 }` ] ) {
+        //
+        //         Renderer.display.context.fillStyle = "rgba( 255, 255, 255, 0.5 )";
+        //         Renderer.display.context.fillRect( x, y, 16, 16 );
+        //
+        //     }
+        //
+        // }
 
     }
 
     gameOver( ) {
 
-        if ( this.trigger )
-            return;
 
-        this.trigger = true;
+        // if ( this.trigger )
+        //     return;
+        //
+        // this.trigger = true;
+        //
+        // for( let i = 0; i < 100; i++) {
+        //
+        //     for ( const entity of this.entities ) {
+        //
+        //         // Get the entity's position
+        //         const x = entity.x;
+        //         const y = entity.y;
+        //
+        //         // Check possible movement directions
+        //         const dirs = [
+        //             [ x, y - 16 ],
+        //             [ x, y + 16 ],
+        //             [ x - 16, y ],
+        //             [ x + 16, y ],
+        //             [ x - 16, y - 16 ],
+        //             [ x + 16, y - 16 ],
+        //             [ x - 16, y + 16 ],
+        //             [ x + 16, y + 16 ],
+        //         ];
+        //
+        //         // Filter out invalid directions
+        //         const validDirs = dirs.filter( ( [ x, y ] ) => {
+        //
+        //             // Check if the tile is walkable
+        //             const tile = this.map.getTileAt( x / 16, y / 16 )?.[ 0 ];
+        //
+        //             if ( tile && !tile.blocking && this.visible[ `${ tile.x / 16 },${ tile.y / 16 }` ] ) return true;
+        //
+        //             return false;
+        //
+        //         } );
+        //
+        //         if ( !validDirs.length ) continue;
+        //
+        //         // Pick a random direction
+        //         const [ newX, newY ] = validDirs[ ~~( Math.random() * validDirs.length ) ];
+        //
+        //         // Move the entity
+        //         entity.move( newX, newY );
 
-        for( let i = 0; i < 100; i++) {
 
-            for ( const entity of this.entities ) {
+         //   }
 
-                // Get the entity's position
-                const x = entity.x;
-                const y = entity.y;
-
-                // Check possible movement directions
-                const dirs = [
-                    [ x, y - 16 ],
-                    [ x, y + 16 ],
-                    [ x - 16, y ],
-                    [ x + 16, y ],
-                    [ x - 16, y - 16 ],
-                    [ x + 16, y - 16 ],
-                    [ x - 16, y + 16 ],
-                    [ x + 16, y + 16 ],
-                ];
-
-                // Filter out invalid directions
-                const validDirs = dirs.filter( ( [ x, y ] ) => {
-
-                    // Check if the tile is walkable
-                    const tile = this.map.getTileAt( x / 16, y / 16 )?.[ 0 ];
-
-                    if ( tile && !tile.blocking && this.visible[ `${ tile.x / 16 },${ tile.y / 16 }` ] ) return true;
-
-                    return false;
-
-                } );
-
-                if ( !validDirs.length ) continue;
-
-                // Pick a random direction
-                const [ newX, newY ] = validDirs[ ~~( Math.random() * validDirs.length ) ];
-
-                // Move the entity
-                entity.move( newX, newY );
-
-
-            }
-
-        }
+        // }
 
 
         // if ( this.trig ) return;
@@ -361,7 +322,7 @@ class Game {
 
 
 
-        // window.alert( "You lose!" );
+        window.alert( "You lose!" );
 
     }
 

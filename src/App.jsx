@@ -27,7 +27,7 @@ function App() {
         <Router>
             <AuthProvider socket={ socket }>
                 <Routes>
-                    <Route path="/" element={ <p> main </p> } />
+                    <Route path="/" element={ <p>Main</p>} />
                     <Route path="/rogue" element={
                         <RequireAuth>
                             <Suspense fallback={ <div>Loading...</div> }>

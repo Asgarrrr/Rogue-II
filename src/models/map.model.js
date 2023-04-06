@@ -9,6 +9,7 @@ const mapSchema = new Schema({
     doors   : Array,
     stairs  : Array,
     rooms   : Array,
+    exit    : Array,
 
 });
 

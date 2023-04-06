@@ -38,11 +38,57 @@ class WSManager {
 
     }
 
-    tileUpdate( mapID, x, y, sx, sy, block, subTiles, alreadyRendered ) {
+    attack( targetType, targetID, damage ) {
 
-        this.socket.emit( "tile:update", {
-            token: this.token( ), mapID, x, y, sx, sy, block, subTiles, alreadyRendered,
+        this.socket.emit( "entity:attack", {
+            token: this.token( ), targetType, targetID, damage,
         } );
+
+    }
+
+    die( targetType, targetID ) {
+
+        this.socket.emit( "entity:die", {
+            token: this.token( ), targetType, targetID,
+        } );
+
+    }
+
+    playerReward( targetID, XP ) {
+
+        this.socket.emit( "player:reward", {
+            token: this.token( ),
+            targetID,
+            XP,
+        } );
+
+    };
+
+    nextLevel( targetID ) {
+
+        this.socket.emit( "player:nextLevel", {
+            token: this.token( ),
+            targetID,
+        } );
+
+    }
+
+    test( mapID ) {
+
+        this.socket.emit( "map:delete", {
+            token: this.token( ),
+            mapID,
+        } );
+
+    }
+
+    askForMap( champID ) {
+
+        this.socket.emit( "map:askForMap", {
+            token: this.token( ),
+            champID,
+        } );
+
 
     }
 

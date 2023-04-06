@@ -50,12 +50,6 @@ canvas {
     border: 1px solid #000;
 }
 
-#stats {
-    position: absolute;
-    z-index: 1;
-    bottom: 0;
-}
-
 #minimap-wall-layer {
     position: absolute;
     z-index: 1;

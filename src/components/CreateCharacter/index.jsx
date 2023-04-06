@@ -60,8 +60,6 @@ export default function CreateCharacter({ socket }) {
 
     const saveHero = ( ) => {
 
-        console.log( "Saving hero...")
-
         socket.emit( "character:create", {
             hero : {
                 name,

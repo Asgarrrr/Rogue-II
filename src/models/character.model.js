@@ -8,7 +8,7 @@ const characterSchema = new Schema({
 
     // —— Stats
     level: { type: Number, default: 1   },
-    experience: { type: Number, default: 0 },
+    experience: { type: Number, default: 1 },
 
     health      : {
         current: { type: Number, default: 15 },

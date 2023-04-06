@@ -60,7 +60,9 @@ export default ( io, socket ) => {
                         data    : cacheMap.data,
                         doors   : cacheMap.doors,
                         rooms   : cacheMap.rooms,
+                        exit    : cacheMap.exit,
                         _id     : cacheMap._id,
+                        entities
                     } );
                     return;
                 }
@@ -70,7 +72,15 @@ export default ( io, socket ) => {
             const _map = new Map( );
             const _generatedMap = await _map.generate( 30, 30 );
 
-            await CharacterModel.updateOne( { _id: hero._id }, { currentMap: _generatedMap._id } );
+            const [ ,, spx, spy ] = Object.values( _generatedMap.tiles )[ 0 ]
+
+            await CharacterModel.updateOne( { _id: hero._id }, {
+                currentMap: _generatedMap._id,
+                position: {
+                    x: spx / 16,
+                    y: spy / 16
+                }
+            } );
 
             // Coefficient of entities per room ( with difficulty modifier )
             const entityPerRoom = 1
@@ -119,8 +129,13 @@ export default ( io, socket ) => {
                 data    : _generatedMap.data,
                 doors   : _generatedMap.doors,
                 rooms   : _generatedMap.rooms,
+                exit    : _generatedMap.exit,
                 entities: entities,
                 _id     : _generatedMap._id,
+                nsp     : {
+                    x: spx / 16,
+                    y: spy / 16
+                }
             } );
 
         } catch ( error ) {
@@ -134,5 +149,11 @@ export default ( io, socket ) => {
 
     socket.on( "map:generate", generateMap );
     socket.on( "map:askForMap", test );
+    socket.on( "map:delete", async ( { token, mapID } ) => {
+        console.log( mapID )
+
+        await MapModel.deleteOne( { _id: mapID } )
+
+    } );
 
 }

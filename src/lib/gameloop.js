@@ -69,10 +69,15 @@ class GameLoop {
         this.renderTimeAverage = this.renderTimeArray.reduce( ( a, b ) => a + b ) / this.renderTimeArray.length;
 
         document.querySelector( "#stats" ).innerHTML = `
-            <div>FPS: ${Math.round( 1000 / ( this.dt + renderTime ) )}</div>
-            <div>Render time: ${renderTime}ms (average: ${( this.renderTimeAverage )}ms)</div>
+               FPS: ${Math.round( 1000 / ( this.dt + renderTime ) )}
         `;
 
+    }
+
+    logout() {
+        // Remove the token from the local storage
+        window.localStorage.removeItem( "bearer" );
+        window.location.href = "/login";
     }
 
     start() {

@@ -61,6 +61,15 @@ class Minimap {
 
     };
 
+    clear() {
+
+        this.alradyRenderedWalls = {};
+        this.alradyRenderedEntities = {};
+        this.wallLayerContext.clearRect( 0, 0, this.wallLayer.width, this.wallLayer.height );
+        this.entityLayerContext.clearRect( 0, 0, this.entityLayer.width, this.entityLayer.height );
+
+    }
+
 }
 
 export default new Minimap();
