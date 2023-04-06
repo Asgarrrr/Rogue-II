@@ -14,23 +14,42 @@ import game from "./game";
  */
 class Player extends Entity {
 
-    constructor( XP = 1 ) {
+    constructor( {
+        name,
+        health: {
+            current : HP,
+            max     : maxHP
+        },
+        strength,
+        vitality,
+        defense,
+        dexterity,
+        experience,
+        _id: id,
+        class: _class,
+    }) {
 
-        super( 0, 8, 16, 0 );
+        super( 0, 8 + parseInt( _class ), 16, 0 );
+
+        this.HP         = HP;
+        this.maxHP      = maxHP;
+        this.strength   = strength;
+        this.vitality   = vitality;
+        this.defense    = defense;
+        this.dexterity  = dexterity;
+
 
         this.direction  = null;
         this.type       = "player";
-        this.ATK        = 10;
+
 
         // —— Experience related properties
-        this.XP     = XP;
-        this.level  = ( ) => Math.ceil( ( Math.sqrt( 1 + ( 8 * this.XP ) / 100 ) - 1 ) / 2 );
-        this.maxXP  = ( ) => ( Math.ceil( this.level() ) * ( Math.ceil( this.level() ) + 1 ) ) * 100;
+        this.XP     = experience;
 
-        document.getElementById( "HPBar" ).style.background = `linear-gradient(90deg, #992020 ${( ( this.HP / this.maxHP ) * 100 )}%, #180e12 ${( ( this.HP / this.maxHP ) * 100 )}%)`;
+        document.getElementById( "HPBar" ).style.background = `linear-gradient(90deg, #992020 ${( ( this.HP / this.maxHP ) * 100 )}%, #2f1a22 ${( ( this.HP / this.maxHP ) * 100 )}%)`;
         document.getElementById( "HPCurrent" ).innerHTML = this.HP;
         document.getElementById( "HPMax" ).innerHTML = this.maxHP;
-        document.getElementById( "XPBar" ).style.background = `linear-gradient(90deg, #FFAF6599 ${( ( this.XP / this.maxXP() ) * 100 )}%, #180e12 ${( ( this.XP / this.maxXP() ) * 100 )}%)`;
+        document.getElementById( "XPBar" ).style.background = `linear-gradient(90deg, #FFAF6599 ${( ( this.XP / this.maxXP() ) * 100 )}%, #2f1a22 ${( ( this.XP / this.maxXP() ) * 100 )}%)`;
         document.getElementById( "XPLvl" ).innerHTML = this.level();
     }
 
@@ -54,6 +73,8 @@ class Player extends Entity {
                 this.direction = "down";
             else if ( Keyboard.pressed( " " ) )
                 return this.turnDone();
+            else if ( Keyboard.pressed( "$" ) )
+                return this.die();
 
             if ( this.direction ) {
 
@@ -101,7 +122,7 @@ class Player extends Entity {
      * @see         Entity.die
      */
     die() {
-        super.die();
+        // super.die();
         game.gameOver();
     }
 
@@ -112,7 +133,7 @@ class Player extends Entity {
      */
     setHP( hp ) {
         super.setHP( hp );
-        document.getElementById( "HPBar" ).style.background = `linear-gradient(90deg, #992020 ${( ( this.HP / this.maxHP ) * 100 )}%, #180e12 ${( ( this.HP / this.maxHP ) * 100 )}%)`;
+        document.getElementById( "HPBar" ).style.background = `linear-gradient(90deg, #992020 ${( ( this.HP / this.maxHP ) * 100 )}%, #2f1a22 ${( ( this.HP / this.maxHP ) * 100 )}%)`;
         document.getElementById( "HPCurrent" ).innerHTML = this.HP;
         document.getElementById( "HPMax" ).innerHTML = this.maxHP;
     }
@@ -139,7 +160,7 @@ class Player extends Entity {
 
         }
 
-        document.getElementById( "XPBar" ).style.background = `linear-gradient(90deg, #FFAF6599 ${( ( this.XP / this.maxXP() ) * 100 )}%, #180e12 ${( ( this.XP / this.maxXP() ) * 100 )}%)`;
+        document.getElementById( "XPBar" ).style.background = `linear-gradient(90deg, #FFAF6599 ${( ( this.XP / this.maxXP() ) * 100 )}%, #2f1a22 ${( ( this.XP / this.maxXP() ) * 100 )}%)`;
     }
 
 

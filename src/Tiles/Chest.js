@@ -17,8 +17,6 @@ export default class Chest extends Tile {
 
     render( state = 0 ) {
 
-        console.log( state )
-
         Renderer.render(
             AssetManager.getSpriteImage( "dynamic", this.sx, this.sy ),
             this.x,

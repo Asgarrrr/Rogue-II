@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ path: "../.env" })
+
 
 import { createServer } from "http";
 import { Server as socketServer } from "socket.io";
@@ -8,15 +9,11 @@ import { globSync } from "glob";
 import socketHandler from "./socketHandler/index.js";
 import path from "node:path";
 
+import( `../src/models/character.model.js` );
+import( `../src/models/session.model.js` );
+import( `../src/models/user.model.js` );
+
 ( async ( ) => {
-
-    // —— Load all mongoose models
-    globSync( "./src/models/*.model.js" ).forEach( ( file ) => {
-
-        const modelName = path.basename( file ).split( "." )[ 0 ];
-        import( `../src/models/${ modelName }.model.js` );
-
-    } );
 
     // —— Connect to the database
     await mongoose.connect( process.env.MONGO_URI, {

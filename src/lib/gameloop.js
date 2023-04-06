@@ -47,7 +47,7 @@ class GameLoop {
         this.dt     = this.now - this.last;
         this.last   = this.now
 
-        // Prevent updating the game with a very large dt if the game were to lose focus and then regain focus later
+        // —— Prevent updating the game with a very large dt if the game were to lose focus and then regain focus later
         if ( this.dt > 1000 )
             return;
 

@@ -1,34 +1,43 @@
-import {
-    useState, useEffect, lazy, Suspense
-} from 'react'
+import { useState, useEffect, lazy, Suspense } from "react"
+
+import "rot-js"
+import "./Rogue.css"
 
 const CreateCharacter = lazy(() => import( "../components/CreateCharacter/" ) );
 
 export default function Rogue({ socket }) {
 
-    const [ user, setUser ] = useState({});
-    const [ character, setCharacter ] = useState( null );
-
+    const [ user, setUser ]             = useState( {} );
+    const [ character, setCharacter ]   = useState( null );
 
     useEffect(() => {
 
         // —— Exchange token for user data
-        socket.emit( "user:load", { token: localStorage.getItem( "bearer" ) });
+        socket.emit( "user:load", {
+            token: localStorage.getItem( "bearer" )
+        });
 
         // —— Listen for user data
         socket.on( "user:load", ( { user, chars } ) => {
+
             setUser( user );
             setCharacter( chars );
+
         });
 
-    }, [ socket ])
+    }, [ ])
 
-    useEffect(() => {
+    useEffect( () => {
 
         if ( !character )
             return;
 
-        console.log( character );
+        import( "../class/game" ).then( ( { default: Game } ) => {
+
+            Game.init({ hero: character });
+
+        });
+
 
     }, [ character ])
 
@@ -37,40 +46,74 @@ export default function Rogue({ socket }) {
         return <div>Loading...</div>
 
     if ( character.length === 0 )
-        return createCharacter( socket );
+        return (
+            <div className="w-full h-full bg-rogue text-white font-m5x7">
 
-    return (
-        <div>
-            <h1>Rogue</h1>
-        </div>
-    )
+                <div className="w-full h-full flex justify-center items-center relative top-[-10%]" >
+                    <CreateCharacter socket={ socket } />
+                </div>
 
-}
-
-
-function createCharacter( socket ) {
-
-    return (
-        <div className="w-full h-full bg-rogue text-white font-m5x7">
-
-            <div className="w-full h-full flex justify-center items-center relative top-[-10%]" >
-                <CreateCharacter socket={ socket } />
+                <div className="bonfires"></div>
             </div>
+        )
+
+    if ( character.length > 1 )
+        return <div>Too many characters</div>
 
 
-            <div className="bonfires"></div>
+    return (
+        <div id="game" className="relative overflow-hidden">
+
+            <div className="font-m5x7 text-white absolute w-14 top-10 left-10 z-10">
+                <div className="quickSlot rotate-45 py-[50%]" >
+                    <div id="slot-1">
+                        <img src="./pouch.png" />
+                        <span>I</span>
+                    </div>
+                    <div id="slot-2">
+                        <span>D</span>
+                    </div>
+                    <div id="slot-3">
+                        <span>O</span>
+                    </div>
+                    <div id="slot-4">
+                        <span>U</span>
+                    </div>
+                </div>
+
+                <div id="indicator">
+
+                    <svg width="0" height="0">
+                        <clipPath id="clipPath">
+                            <polygon points="3 3, 7 0, 17 10, 330 10, 330 16, 15 15, 0 0"></polygon>
+                        </clipPath>
+                    </svg>
+
+                    <div id="HP">
+                        <img id="HPHearth" src="./hearth.svg" alt="" />
+
+                        <div id="HPValue">
+                            <span id="HPCurrent">--</span> / <span id="HPMax">--</span>
+                        </div>
+                        <div id="HPBar"></div>
+                    </div>
+
+                    <div id="XP">
+                        <span id="XPData">Lvl. <span id="XPLvl">--</span></span>
+                        <div id="XPBar"></div>
+                    </div>
+
+                    {/* <div id="affliction" >
+                        <img src="./malus/poison.png" />
+                    </div> */}
+
+                </div>
+            </div>
+            <div id="stats"></div>
         </div>
     )
 
-
 }
-
-
-
-
-
-
-
 
 
 

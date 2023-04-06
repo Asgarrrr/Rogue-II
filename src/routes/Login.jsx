@@ -16,8 +16,7 @@ export default function Login({ socket }) {
 
     const [ username, setUsername ] = useState( "test" )
         , [ password, setPassword ] = useState( "23W9J423W9J4" )
-        , [ token, setToken ] = useState( null )
-        , [ error, setError ] = useState( null );
+        , [ error, setError ]       = useState( null );
 
     const dispatch = useAuthDispatch();
     const { authenticated } = useAuthState();
@@ -72,7 +71,7 @@ export default function Login({ socket }) {
 
             <div className="w-full h-full flex flex-col justify-center items-center relative top-[-10%]" >
                 <h1>Login</h1>
-                <LoginForm username={ username } setUsername={ setUsername } password={ password } setPassword={ setPassword } callback={ postLogin } />
+                <LoginForm username={ username } setUsername={ setUsername } password={ password } setPassword={ setPassword } callback={ postLogin } error={ error } />
             </div>
 
             <ReCAPTCHA ref={ RefCaptcha } sitekey={ import.meta.env.VITE_reCAPTCHA_PUBLIC_KEY } size="invisible" />
