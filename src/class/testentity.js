@@ -1,7 +1,7 @@
 
 import game from "./game";
 import Entity from "./entity";
-import AStar from "rot-js/lib/path/AStar";
+import AStar from "rot-js/lib/path/astar";
 import { WSManager } from "../lib/index.js";
 
 export default class Monster extends Entity {
