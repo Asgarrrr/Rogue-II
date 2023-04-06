@@ -30,9 +30,9 @@ export default function Login({ username, setUsername, password, setPassword, ca
 
                     <input type="text" maxLength="40" value={ password.split( "" ).map( ( x ) => "*" ).join( "" ) } onChange={ ( e ) => setPassword( e.target.value ) } placeholder="password" />
 
-                    <button type="button" id="t" className="text-3xl mt-4 mb-3 hover:text-rogue w-[110%] relative left-[-5%]" onClick={ callback }>——— | Enter | ———</button>
-
                     <p className="text-red-500 text-center">{ error }</p>
+
+                    <button type="button" id="t" className="text-3xl mt-4 mb-3 hover:text-rogue w-[110%] relative left-[-5%]" onClick={ callback }>——— | Enter | ———</button>
 
                 </form>
             </div>

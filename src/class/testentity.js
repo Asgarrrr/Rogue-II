@@ -38,6 +38,7 @@ class TestEntity extends Entity {
 
                 } else {
 
+                    console.log( this );
                     this.attack( game.player );
                 }
 

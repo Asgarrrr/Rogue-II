@@ -7,7 +7,6 @@ export default ( io, socket ) => {
         const map = new Map( );
         map.generate( );
         console.log( map.tiles );
-        console.log( "ask for map generation" )
 
     }
 

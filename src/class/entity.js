@@ -29,12 +29,11 @@ class Entity {
         // —— Statistic properties
         this.HP         = 20;
         this.maxHP      = 20;
-        this.ATK        = 2;
-        this.DEF        = 10;
-        this.SPD        = 10;
-        this.LUK        = 10;
+        this.strength   = 10;
+        this.vitality   = 10;
+        this.defense    = 10;
+        this.dexterity  = 10;
 
-        this.level      = 1;
         this.gold       = 0;
 
         this.inventory  = [];
@@ -49,6 +48,58 @@ class Entity {
 
         this.hasTakeDamage = false;
 
+        this.level  = ( ) => Math.ceil( ( Math.sqrt( 1 + ( 8 * this.XP ) / 100 ) - 1 ) / 2 );
+        this.maxXP  = ( ) => ( Math.ceil( this.level() ) * ( Math.ceil( this.level() ) + 1 ) ) * 100;
+
+    }
+
+    // —— Statistic properties
+    getHP() {
+        return this.HP;
+    }
+
+    setHP(HP) {
+        this.HP = HP;
+    }
+
+    getMaxHP() {
+        return this.maxHP;
+    }
+
+    setMaxHP(maxHP) {
+        this.maxHP = maxHP;
+    }
+
+    getStrength() {
+        return this.strength;
+    }
+
+    setStrength(strength) {
+        this.strength = strength;
+    }
+
+    getVitality() {
+        return this.vitality;
+    }
+
+    setVitality(vitality) {
+        this.vitality = vitality;
+    }
+
+    getDefense() {
+        return this.defense;
+    }
+
+    setDefense(defense) {
+        this.defense = defense;
+    }
+
+    getDexterity() {
+        return this.dexterity;
+    }
+
+    setDexterity(dexterity) {
+        this.dexterity = dexterity;
     }
 
     render( state = 0 ) {
@@ -271,7 +322,7 @@ class Entity {
 
             target.hasTakeDamage = false;
 
-            if ( target.setHP( target.HP - this.ATK ) <= 0 ) {
+            if ( target.setHP( target.HP - this.strength ) <= 0 ) {
 
                 target.die( );
 

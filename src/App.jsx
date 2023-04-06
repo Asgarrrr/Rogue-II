@@ -20,8 +20,6 @@ const socket = io( import.meta.env.VITE_SERVER_URL, {
 
 function App() {
 
-    // const [ token, setToken ] = React.useState( null );
-
     return (
         <Router>
             <AuthProvider socket={ socket }>
@@ -30,7 +28,7 @@ function App() {
                     <Route path="/rogue" element={
                         <RequireAuth>
                             <Suspense fallback={ <div>Loading...</div> }>
-                                <Rogue socket={socket} />
+                                <Rogue socket={ socket } />
                             </Suspense>
                         </RequireAuth> }
                     />

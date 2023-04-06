@@ -12,6 +12,13 @@ import { v4 as uuid }   from "uuid";
  */
 export default ( io, socket, db ) => {
 
+    /**
+     * @param { challenge: string, username: string, password: string } data
+     * @returns {void}
+     * @description This event is used to login a user
+     * — It checks if the user exists, if the password is correct and if the user is not a bot
+     * — If everything is ok, it creates a session and returns the token
+     */
     socket.on( "user:login", async ( { challenge, username, password } ) => {
 
         if ( !challenge )
@@ -129,7 +136,7 @@ export default ( io, socket, db ) => {
         // Check if the user has characters
         const Character = db.model( "character" );
 
-        const chars = await Character.find( { user: user._id } );
+        const chars = await Character.findOne( { user: user._id } );
 
         socket.emit( "user:load", { user, chars } );
 

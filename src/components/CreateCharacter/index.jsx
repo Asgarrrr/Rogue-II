@@ -144,8 +144,11 @@ export default function CreateCharacter({ socket }) {
 
             <div className="absolute right-0 mb-5 mr-10 text-right">
                 <button className={ name.length > 0 && points === 0 ? "text-4xl text-white-500" : " text-4xl text-gray-500" } disabled={ name.length > 0 && points === 0 ? false : true } onClick={ ( ) => { saveHero( socket ) } }>Enter the dungeon &gt;</button>
-                { name.length === 0 && <p className="text-red-500">Please enter a name</p> }
-                { points > 0 && <p className="text-red-500">Please distribute all your points</p> }
+                <div className="text-red-500">
+                    { name.length === 0 && <p>Please enter a name </p> }
+                    { points > 0 && <p>Please distribute all your points</p> }
+                </div>
+
             </div>
 
         </div>

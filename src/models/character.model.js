@@ -2,9 +2,9 @@ import { Schema, model } from "mongoose";
 
 const characterSchema = new Schema({
 
-    name: { type: String, required: true },
-    user: { type: Schema.Types.ObjectId, ref: "user", required: true },
-    class: { type: String, required: true, enum: [ 0, 1, 2 ] },
+    name:  { type: String, required: true },
+    user:  { type: Schema.Types.ObjectId, ref: "user", required: true },
+    class: { type: Number, required: true, enum: [ 0, 1, 2 ] },
 
     // —— Stats
     level: { type: Number, default: 1   },

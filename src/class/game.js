@@ -19,8 +19,6 @@ import Player from "./player";
 import TestEntity from "./testentity";
 import Shop from "./shop"
 
-import wsmanager from "../lib/wsmanager";
-
 class Game {
 
     constructor() {
@@ -35,10 +33,14 @@ class Game {
 
         this.playerOPos = { x: null, y: null };
 
-        this.WebSockets = new wsmanager();
     }
 
-    async init( ) {
+    async init( {
+        hero
+    }) {
+
+        if ( !hero )
+            alert( "No hero selected" );
 
         Renderer.createDisplay( 512, 288 );
         Minimap.createDisplay( 128, 128 );
@@ -54,7 +56,9 @@ class Game {
         this.map.generate( 30, 30 );
 
         // Create a new player entity
-        const player = new Player();
+        const player = new Player(
+            hero,
+        );
 
         this.player = player;
         const tile = Object.values( this.map.tiles )[ 0 ];
@@ -66,8 +70,14 @@ class Game {
 
         for ( let i = 0; i < 3; i++ ) {
 
-            // Create a new test entity, and place it in a random room
+            // —— Create a new test entity, and place it in a random room
             const entity = new TestEntity( 0, [ 0, 2, 4, 6 ][ Math.floor( Math.random() * 4 ) ], 0, 0 );
+
+            entity.setMaxHP( 10 );
+            entity.setHP( 10 );
+            entity.setStrength( 3 );
+            entity.setDefense( -1 );
+
             const room = this.map.getRooms()[~~( Math.random() * this.map.getRooms().length )];
 
             const { _x1, _x2, _y1, _y2 } = room;
@@ -81,7 +91,7 @@ class Game {
 
         }
 
-        this.entities.push( new Shop( 2, 0, 0, 0 ) );
+        // this.entities.push( new Shop( 2, 0, 0, 0 ) );
 
         this.scheduler = new ROT.Scheduler.Simple();
 
@@ -201,12 +211,97 @@ class Game {
     }
 
     gameOver( ) {
-        GameLoop.stop();
-        this.engine.lock();
-        window.alert( "You lose!" );
+
+        if ( this.trigger )
+            return;
+
+        this.trigger = true;
+
+        for( let i = 0; i < 100; i++) {
+
+            for ( const entity of this.entities ) {
+
+                // Get the entity's position
+                const x = entity.x;
+                const y = entity.y;
+
+                // Check possible movement directions
+                const dirs = [
+                    [ x, y - 16 ],
+                    [ x, y + 16 ],
+                    [ x - 16, y ],
+                    [ x + 16, y ],
+                    [ x - 16, y - 16 ],
+                    [ x + 16, y - 16 ],
+                    [ x - 16, y + 16 ],
+                    [ x + 16, y + 16 ],
+                ];
+
+                // Filter out invalid directions
+                const validDirs = dirs.filter( ( [ x, y ] ) => {
+
+                    // Check if the tile is walkable
+                    const tile = this.map.getTileAt( x / 16, y / 16 )?.[ 0 ];
+
+                    if ( tile && !tile.blocking && this.visible[ `${ tile.x / 16 },${ tile.y / 16 }` ] ) return true;
+
+                    return false;
+
+                } );
+
+                if ( !validDirs.length ) continue;
+
+                // Pick a random direction
+                const [ newX, newY ] = validDirs[ ~~( Math.random() * validDirs.length ) ];
+
+                // Move the entity
+                entity.move( newX, newY );
+
+
+            }
+
+        }
+
+
+        // if ( this.trig ) return;
+        // this.trig = true
+
+
+        // Skip turn for all entities
+
+
+
+
+
+
+
+        // //GameLoop.stop();
+        // // Skip turn for all entities
+        // setInterval(() => {
+        //     const e = this.scheduler.next();
+        //     console.log( e )
+        //     e.turns = true
+        //     e.update( )
+        // }, 1000);
+
+
+
+        // const element = document.createElement( "div" );
+        // element.classList.add( "game-over" );
+        // // Add the element at the start of the #game
+        // document.getElementById( "game" ).prepend( element );
+
+        // element.style.outline = Renderer.display.canvas.width + "px solid #000000";
+        // document.getElementById( "main-game-display" ).classList.add( "shake" );
+        // document.getElementById( "main-game-display" ).style.backgroundColor = "black";
+        // document.getElementById( "root" ).style.backgroundColor = "black";
+
+
+
+        // window.alert( "You lose!" );
 
     }
 
 }
 
-export default new Game();
+export default new Game( );
