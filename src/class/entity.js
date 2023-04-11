@@ -323,8 +323,6 @@ class Entity {
 
             target.hasTakeDamage = false;
 
-            console.log( this.strength )
-
             if ( target.setHP( target.HP - this.strength ) <= 0 ) {
 
                 target.die( )
@@ -354,7 +352,6 @@ class Entity {
     die() {
         game.entities.splice( game.entities.indexOf( this ), 1 );
         game.scheduler.remove( this );
-
     }
 
     setHP( HP ) {

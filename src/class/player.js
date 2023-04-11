@@ -123,8 +123,9 @@ class Player extends Entity {
      * @see         Entity.die
      */
     die() {
-        super.die();
+        console.log( this.type )
         game.gameOver();
+        super.die();
     }
 
     /**
