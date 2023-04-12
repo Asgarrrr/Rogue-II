@@ -99,13 +99,16 @@ class Game {
 
                 const _entity = new TestEntity( _id, sx, sy, 0, 0 );
 
-                _entity.x       = x * 16;
-                _entity.gridX   = x;
-                _entity.y       = y * 16;
-                _entity.gridY   = y;
-                _entity.HP      = HP;
-                _entity.maxHP   = MHP;
+                console.log( HP, MHP )
 
+                _entity.x           = x * 16;
+                _entity.gridX       = x;
+                _entity.y           = y * 16;
+                _entity.gridY       = y;
+                _entity.HP          = 10;
+                _entity.maxHP       = 10;
+                _entity.strength    = 2;
+                _entity.defense     = 2;
 
                 this.entities.push( _entity );
 
@@ -235,6 +238,16 @@ class Game {
 
     gameOver( ) {
 
+        GameLoop.stop();
+        this.engine.lock();
+
+        setTimeout( () => {
+
+            window.alert( "You lose!" );
+            window.location.reload();
+
+        }, 100 )
+
 
         // if ( this.trigger )
         //     return;
@@ -320,9 +333,6 @@ class Game {
         // document.getElementById( "main-game-display" ).style.backgroundColor = "black";
         // document.getElementById( "root" ).style.backgroundColor = "black";
 
-
-
-        window.alert( "You lose!" );
 
     }
 

@@ -1,5 +1,5 @@
 import {
-    WSManager
+    WSManager, Renderer
 } from "../lib/index";
 
 import Tile from "../class/tile";
@@ -15,6 +15,7 @@ export default class Exit extends Tile {
     }
 
     exit( ) {
+
         WSManager.nextLevel(
             Game.player.ID
         );
@@ -26,7 +27,6 @@ export default class Exit extends Tile {
         WSManager.askForMap(
             Game.player.ID
         )
-
 
     }
 
