@@ -5,6 +5,8 @@ class Entity {
 
     constructor( sx, sy, x, y, type, hostile = false ) {
 
+        this.name        = `E-${ Math.random().toString( 36 ).substr( 2, 9 ) }`;
+
         this.type        = type;
         this.hostile     = hostile;
 
@@ -123,7 +125,7 @@ class Entity {
             const data = imageData.data;
 
             for ( let i = 0; i < data.length; i += 4 ) {
-                data[ i ] = 255;
+                data[ i ]     = 255;
                 data[ i + 1 ] = 0;
                 data[ i + 2 ] = 0;
             }
@@ -178,24 +180,39 @@ class Entity {
             Renderer.display.context.fillStyle = "rgba( 255, 0, 0, 0.2 )";
             Renderer.display.context.fillRect( renderX + ( this.HP / this.maxHP ) * 16, renderY - 5, ( ( this.maxHP - this.HP ) / this.maxHP ) * 16, 2 );
 
+            // —— Draw the Name
+            Renderer.display.context.fillText( this.name, renderX, renderY - 10 );
+
         }
 
     }
 
     async act() {
 
-        game.engine.lock();
-        this.type === "player"
-            ? setTimeout( ( ) => ( this.turn = true ), 120  )
-            : ( this.turn = true );
+        if ( this.type === "player" ) {
+
+            game.engine.lock();
+            setTimeout( () => ( this.turn = true ), 120 );
+
+        // Only move monster near ( 15 tiles ) around the player
+
+        } else if ( this.type === "monster" ) {
+
+            const { gridY: playerGridY, gridX: playerGridX } = game.player;
+
+            if ( Math.abs( this.gridX - playerGridX ) <= 15 && Math.abs( this.gridY - playerGridY ) <= 15 ) {
+                game.engine.lock();
+                this.turn = true;
+            }
+
+        }
 
     }
 
     turnDone() {
 
-        this.turn = false;
         game.engine.unlock();
-
+        this.turn = false;
     }
 
     update( delta ) {

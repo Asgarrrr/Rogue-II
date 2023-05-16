@@ -70,7 +70,7 @@ export default ( io, socket ) => {
             } else console.log( "No current map" )
 
             const _map = new Map( );
-            const _generatedMap = await _map.generate( 30, 30 );
+            const _generatedMap = await _map.generate( 130, 130 );
 
             const [ ,, spx, spy ] = Object.values( _generatedMap.tiles )[ 0 ]
 

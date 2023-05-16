@@ -18,9 +18,9 @@
 
         return new Promise( ( resolve, reject ) => {
 
-            const image = new Image();
-            image.onload    = () => resolve( this.images.set( key, image ) );
-            image.onerror   = () => reject();
+            const image     = new Image();
+            image.onload    = ( ) => resolve( this.images.set( key, image ) );
+            image.onerror   = ( ) => reject( );
             image.src = src;
 
         });
@@ -30,20 +30,18 @@
     /**
      * @method      getSpriteImage
      * @description Returns a sprite image from the AssetManager.
-     * @param       {string} key The name of the image.
-     * @param       {number} sx The x position of the sprite.
-     * @param       {number} sy The y position of the sprite.
+     * @param       {string} imageKey The name of the image.
+     * @param       {number} dx The x position of the sprite.
+     * @param       {number} dy The y position of the sprite.
      * @returns     {Image}
      */
     getSpriteImage( imageKey, dx, dy) {
-        return {
-            image   : this.images.get( imageKey ),
-            dx,
-            dy,
-            width   : this.images.get( imageKey ).width,
-            height  : this.images.get( imageKey ).height
-        }
+
+        const image = this.images.get( imageKey )
+
+        return { image, dx, dy, width : image.width, height : image.height }
+
     }
 }
 
-export default new AssetManager();
+export default new AssetManager( );

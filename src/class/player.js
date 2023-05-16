@@ -40,8 +40,6 @@ class Player extends Entity {
         this.defense    = defense;
         this.dexterity  = dexterity;
 
-        console.log( "dede", this.strength )
-
         this.direction  = null;
         this.type       = "player";
 

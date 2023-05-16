@@ -15,7 +15,7 @@ import flag from "../assets/testTrap.png";
 import Minimap from "./minimap";
 import Map from "./map.js";
 import Player from "./player";
-import TestEntity from "./testentity";
+import TestEntity from "./Monster.js";
 import Shop from "./shop"
 
 class Game {

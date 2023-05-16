@@ -20,12 +20,11 @@ class GameLoop {
         this.update         = null;
         this.render         = null;
 
-        this.fpsArray       = [];
-        this.fpsAverage     = 0;
-        this.fpsLast        = 0;
-
-        this.renderTimeArray = [];
+        this.renderTimeTotal = 0;
+        this.renderTimeFrames = 0;
         this.renderTimeAverage = 0;
+
+        this.statsElement = document.getElementById( "stats" );
 
     }
 
@@ -63,15 +62,12 @@ class GameLoop {
         this.clear();
         this.render();
 
-        const renderTime = new Date() - time;
+        const renderTime = performance.now() - this.now;
+        this.renderTimeTotal += renderTime;
+        this.renderTimeFrames++;
+        this.renderTimeAverage = this.renderTimeTotal / this.renderTimeFrames;
 
-        this.renderTimeArray.push( renderTime );
-        this.renderTimeAverage = this.renderTimeArray.reduce( ( a, b ) => a + b ) / this.renderTimeArray.length;
-
-        document.querySelector( "#stats" ).innerHTML = `
-               FPS: ${Math.round( 1000 / ( this.dt + renderTime ) )}
-        `;
-
+        this.statsElement.innerHTML = `FPS: ${ ~~( 1000 / ( this.dt + renderTime ) ) } `;
     }
 
     logout() {
@@ -96,4 +92,4 @@ class GameLoop {
     }
 }
 
-export default new GameLoop();
+export default new GameLoop( );
