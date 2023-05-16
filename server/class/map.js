@@ -10,7 +10,7 @@ class Map {
 
     }
 
-    async generate( width, height ) {
+    async generate( width = 30, height = 30 ) {
 
         this.digger = new ROT.Map.Digger( width, height, { } );
         let w, h;

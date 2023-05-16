@@ -181,7 +181,7 @@ class Entity {
             Renderer.display.context.fillRect( renderX + ( this.HP / this.maxHP ) * 16, renderY - 5, ( ( this.maxHP - this.HP ) / this.maxHP ) * 16, 2 );
 
             // —— Draw the Name
-            Renderer.display.context.fillText( this.name, renderX, renderY - 10 );
+            // Renderer.display.context.fillText( this.name, renderX, renderY - 10 );
 
         }
 
