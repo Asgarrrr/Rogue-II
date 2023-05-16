@@ -11,7 +11,6 @@ export default ( io, socket ) => {
 
         const map = new Map( );
         map.generate( );
-        console.log( map.tiles );
 
     }
 
@@ -101,12 +100,12 @@ export default ( io, socket ) => {
                         },
                         // —— Entity stuff
                         strength : 3,
-                        vitality : 3,
-                        defense  : 3,
+                        vitality : 8,
+                        defense  : 4,
                         dexterity: 3,
                         health: {
-                            current : 5,
-                            max     : 5
+                            current : 10,
+                            max     : 10
                         },
                         // —— Sprite stuff
                         sx: 0,

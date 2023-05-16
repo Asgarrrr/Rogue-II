@@ -75,7 +75,7 @@ export default function Rogue({ socket }) {
 
     return (
         <div id="game" className="relative overflow-hidden">
-
+            <div id="useForall"></div>
             <div className="font-m5x7 text-white absolute w-14 top-10 left-10 z-10">
                 <div className="quickSlot rotate-45 py-[50%]" >
                     <div id="slot-1">
