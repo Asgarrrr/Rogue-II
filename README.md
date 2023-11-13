@@ -15,10 +15,19 @@ order to gain experience and rewards. The dungeon is procedurally generated, mea
 Player death is permanent and inevitable. The goal of the game is to survive for as long as possible, using the treasures
 found and experience accumulated to improve the player's character.
 
+<br/>
+
+> [!WARNING]
+> This branch is no longer maintained, and will no longer be updated. The project continues on the [Rework](https://github.com/Asgarrrr/Rogue-II/tree/Rework). This branch is a complete overhaul of the project, with a new architecture etc.
+> When the Rework branch will be finished, I will merge it with the main branch, and this branch will be deleted.
+
+
+<br/>
+
 Everytime you play, the dungeon is different. The layout of the dungeon is randomly generated, and the monsters and items
 are also randomly generated. The game is a mix between a dungeon crawler and a roguelike. The game is inspired by
 [Rogue](https://en.wikipedia.org/wiki/Rogue_(video_game)) and [Dungeon Crawl Stone Soup](https://crawl.develz.org/).
-
+‚
 Your progress is real-time saved in a database, so you can continue your game later. You can also play the game on multiple
 devices, and your progress will be synced between them.
 
