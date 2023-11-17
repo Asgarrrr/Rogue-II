@@ -1,9 +1,9 @@
 
 import { HOSTILE_IA_SYSTEM_FLAGS } from "../System/System";
 import { BaseIA } from "./BaseIA.js";
-import { ComponentType } from "../System/System.js";
+import { ComponentType } from "../System/System";
 import AStar from "rot-js/lib/path/astar.js";
-import { DIRS } from "rot-js";
+import { DIRS, RNG } from "rot-js";
 
 export class HostileIA extends BaseIA {
 
@@ -46,7 +46,11 @@ export class HostileIA extends BaseIA {
 
             if ( directions.length ) {
 
+                const [ dx, dy ] = RNG.getItem( directions )
+                path.push( [ mx + dx, my + dy ] );
+            
             }
+
 
         } else {
 
@@ -89,7 +93,7 @@ export class HostileIA extends BaseIA {
                 if ( !c.tiles[ `${ x },${ y }` ] )
                     return false;
 
-                return !( c.tiles[ `${ x},${ y }` ]?.walkable && Object.values( entities ).find( ( e ) => e.x === x && e.y === y ) );
+                return !( c.tiles[ `${ x },${ y }` ]?.walkable && Object.values( entities ).find( ( e ) => e.x === x && e.y === y ) );
 
             }
 
@@ -112,7 +116,7 @@ export class HostileIA extends BaseIA {
 
             e.removeComponent( ComponentType.PositionAnimate );
 
-            e.addComponent( {
+            e.addComponent( [{
                 type: ComponentType.PositionAnimate,
                 data: {
                     start: { x: mx, y: my },
@@ -123,17 +127,17 @@ export class HostileIA extends BaseIA {
                     counter: 0,
                     duration: 10
                 }
-            } );
+            }] );
 
             c.moveEntity(
                 e.index,
                 `${ mx },${ my }`,
                 `${ dx },${ dy }`
             );
-
+    
         }
 
-        c.nextTurn( );
+        e.endTurn( );
 
     }
 
