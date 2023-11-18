@@ -33,40 +33,44 @@ export class Game {
         this.renderer = new Renderer({
             width: this.context.camera.w,
             height: this.context.camera.h,
-            // backgroundColor: 0x26131a
+            // backgroundColor: 0x26131a,
+            preserveDrawingBuffer: true,
+            antialias: true
         });
 
         document.getElementById( "root" )?.appendChild( this.renderer.getView( ) );
 
     }
 
-    init() {
+    async init() {
         
-        this.renderer.loadAssetsFromManifest( {
-            "tiles.png": [
-                {
-                    key: "FLOOR",
-                    x: 32,
-                    y: 32,
-                    w: 16,
-                    h: 16
-                },
-                {
-                    key: "GHOST",
-                    x: 0,
-                    y: 0,
-                    w: 16,
-                    h: 16
-                }, 
-                {
-                    key: "MONSTER",
-                    x: 16*4,
-                    y: 0,
-                    w: 16,
-                    h: 16
-                }
-            ]
-        } );
+        await this.renderer.loadAssetsFromManifest( "spritesheet.json" );
+        
+        // {
+        //     // "tiles.png": [
+        //     //     {
+        //     //         key: "FLOOR",
+        //     //         x: 32,
+        //     //         y: 32,
+        //     //         w: 16,
+        //     //         h: 16
+        //     //     },
+        //     //     {
+        //     //         key: "GHOST",
+        //     //         x: 0,
+        //     //         y: 0,
+        //     //         w: 16,
+        //     //         h: 16
+        //     //     }, 
+        //     //     {
+        //     //         key: "MONSTER",
+        //     //         x: 16*4,
+        //     //         y: 0,
+        //     //         w: 16,
+        //     //         h: 16
+        //     //     }
+        //     // ]
+        // } );
 
         this.spawnObjects();
         this.loop();
@@ -89,20 +93,20 @@ export class Game {
                 return;
 
             this.context.map[ `${ x },${ y }` ] = [ ];
-            const sprite = this.renderer.createFromTexture( "FLOOR" );
+            const sprite = this.renderer.createFromTexture( "tile006" );
             if ( sprite ) {
 
                 const tint = ROT.RNG.getItem([
-                    // "0x6f50ff",
-                    // "0x2f50ff",
+                    "0x6f50ff",
+                    "0x2f50ff",
                     "0xffffff"
                 ]);
 
                 if ( tint )
                     sprite.tint = tint;
 
-                sprite.scale.set(scale);
-                sprite.position.set(x * 16 * scale, y * 16 * scale);
+                sprite.scale.set( scale );
+                sprite.position.set( x * 16 * scale, y * 16 * scale );
                 sprite.alpha = 0;
 
                 this.context.tiles[ `${ x },${ y }` ] = {
@@ -124,7 +128,7 @@ export class Game {
 
         });
 
-        const playerSprite = this.renderer.createFromTexture( "GHOST" );
+        const playerSprite = this.renderer.createFromTexture( "priest2" );
         const playerCoord = this.context.findFreeGridCell();
 
         if ( playerSprite && playerCoord ) {
@@ -134,6 +138,8 @@ export class Game {
             playerSprite.alpha = 1;
             playerSprite.scale.set( scale );
             playerSprite.position.set( x * 16 * scale, y * 16 * scale );
+            playerSprite.animationSpeed = 0.04;
+            playerSprite.play();
 
             this.renderer.addToScene( playerSprite, "Entity" );
 
@@ -141,10 +147,10 @@ export class Game {
             const visionRadius = 10;
 
             player.addComponent([
+                { type: ComponentType.Camera, data: { } },
                 { type: ComponentType.FOV, data: { visionRadius } },
                 { type: ComponentType.Render, data: { sprite: playerSprite } },
                 { type: ComponentType.Position, data: { x, y } },
-                { type: ComponentType.Camera, data: { } },
                 { type: ComponentType.Input, data: { } },
             ]);
 
@@ -154,18 +160,26 @@ export class Game {
         }
 
         // Make some random entities
-        for ( let i = 0; i < 3; i++ ) {
+        for ( let i = 0; i < 9; i++ ) {
 
-            const ms = this.renderer.createFromTexture( "MONSTER" );
+            const ms = this.renderer.createFromTexture( "skeleton" );
             const mc = this.context.findFreeGridCell();
 
             if ( ms && mc ) {
 
                 const [ x, y ] = mc.split( "," ).map( ( c ) => parseInt( c ) );
-
-                ms.alpha = 0.3;
+                
+                ms.alpha = 1;
                 ms.scale.set( scale );
                 ms.position.set( x * 16 * scale, y * 16 * scale );
+                ms.animationSpeed = 0.0 + ( Math.random() * 0.04 );
+                ms.play();
+                
+                ms.eventMode = "static";
+                
+                ms.on('pointerdown', (event) => { alert('clicked!'); });
+                ms.on('pointerover', (event) => { ms.tint = 0x00ff00; });
+                ms.on('pointerout', (event) => { ms.tint = 0xffffff; });
 
                 this.renderer.addToScene( ms, "Entity" );
 
@@ -174,7 +188,6 @@ export class Game {
                 monster.addComponent([
                     { type: ComponentType.Render, data: { sprite: ms } },
                     { type: ComponentType.Position, data: { x, y } },
-                    // { type: ComponentType.RandomMovement, data: { } },
                     { type: ComponentType.HostileIA, data: { } },
                 ]);
 
