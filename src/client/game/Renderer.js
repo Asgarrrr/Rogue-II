@@ -1,4 +1,15 @@
-import {BaseTexture, Container, Rectangle, Renderer as PixiRenderer, SCALE_MODES, Sprite, Texture,} from "pixi.js";
+import {
+  Assets,
+  BaseTexture, 
+  Spritesheet,
+  Container, 
+  Rectangle, 
+  autoDetectRenderer as PixiRenderer, 
+  SCALE_MODES, 
+  Sprite, 
+  AnimatedSprite,
+  Texture
+} from "pixi.js";
 
 export class Renderer {
 
@@ -18,39 +29,29 @@ export class Renderer {
 
   async loadAssetsFromManifest( manifest ) {
 
-    // const t = await Assets.load( manifest );
-
-    // for ( const texture of Object.een( t._frames ) ) {
-    //   console.log( texture )
-    // }
-
-
+    const { data: atlasData } = await Assets.load( manifest );
     
-    for ( const [ filePath, metaList ] of Object.entries( manifest )) {
-      
-      const baseTexture = BaseTexture.from( filePath );
-      baseTexture.scaleMode = SCALE_MODES.NEAREST
-        
-      for ( const meta of metaList ) {
+    const baseTexture = new BaseTexture( atlasData.meta.image );
+    baseTexture.scaleMode = SCALE_MODES.NEAREST;
 
-        const { key, x, y, w, h } = meta;
+    const spritesheet = new Spritesheet( baseTexture, atlasData );
 
-        this.textureMap[ key ] = new Texture(
-            baseTexture,
-            new Rectangle( x, y, w, h )
-        );
+    await spritesheet.parse();
 
-      }
-    }
-
-
+    this.textureMap = spritesheet;
 
   }
 
   createFromTexture( textureKey ) {
 
-    if ( this.textureMap[ textureKey ] )
-      return new Sprite( this.textureMap[ textureKey ] );
+    if( !this.textureMap )
+      throw new Error( "Texture map is not loaded" );
+
+    if ( this.textureMap.animations[ textureKey ] )
+      return new AnimatedSprite( this.textureMap.animations[ textureKey ] );
+
+    if ( this.textureMap.textures[ textureKey ] )
+      return new Sprite( this.textureMap.textures[ textureKey ] );
 
   }
 
