@@ -33,7 +33,7 @@ export class Game {
         this.renderer = new Renderer({
             width: this.context.camera.w,
             height: this.context.camera.h,
-            // backgroundColor: 0x26131a,
+            backgroundColor: 0x26131a,
             preserveDrawingBuffer: true,
             antialias: true
         });
@@ -45,32 +45,6 @@ export class Game {
     async init() {
         
         await this.renderer.loadAssetsFromManifest( "spritesheet.json" );
-        
-        // {
-        //     // "tiles.png": [
-        //     //     {
-        //     //         key: "FLOOR",
-        //     //         x: 32,
-        //     //         y: 32,
-        //     //         w: 16,
-        //     //         h: 16
-        //     //     },
-        //     //     {
-        //     //         key: "GHOST",
-        //     //         x: 0,
-        //     //         y: 0,
-        //     //         w: 16,
-        //     //         h: 16
-        //     //     }, 
-        //     //     {
-        //     //         key: "MONSTER",
-        //     //         x: 16*4,
-        //     //         y: 0,
-        //     //         w: 16,
-        //     //         h: 16
-        //     //     }
-        //     // ]
-        // } );
 
         this.spawnObjects();
         this.loop();
@@ -93,8 +67,11 @@ export class Game {
                 return;
 
             this.context.map[ `${ x },${ y }` ] = [ ];
-            const sprite = this.renderer.createFromTexture( "tile006" );
+            const sprite = this.renderer.createFromTexture( "atile004" );
+
             if ( sprite ) {
+
+                sprite.anchor.set(0.5)
 
                 const tint = ROT.RNG.getItem([
                     "0x6f50ff",
@@ -140,6 +117,7 @@ export class Game {
             playerSprite.position.set( x * 16 * scale, y * 16 * scale );
             playerSprite.animationSpeed = 0.04;
             playerSprite.play();
+            playerSprite.anchor.set(0.5)
 
             this.renderer.addToScene( playerSprite, "Entity" );
 
@@ -160,7 +138,7 @@ export class Game {
         }
 
         // Make some random entities
-        for ( let i = 0; i < 9; i++ ) {
+        for ( let i = 0; i < 10; i++ ) {
 
             const ms = this.renderer.createFromTexture( "skeleton" );
             const mc = this.context.findFreeGridCell();
@@ -172,8 +150,9 @@ export class Game {
                 ms.alpha = 1;
                 ms.scale.set( scale );
                 ms.position.set( x * 16 * scale, y * 16 * scale );
-                ms.animationSpeed = 0.0 + ( Math.random() * 0.04 );
+                ms.animationSpeed = (Math.random() * 0.04);
                 ms.play();
+                ms.anchor.set(0.5)
                 
                 ms.eventMode = "static";
                 
@@ -209,8 +188,8 @@ export class Game {
             new RenderSystem( ),
             new PositionAnimateSystem( ),
             new CameraSystem( ),
-            new RandomMoveSystem( ),
-            new HostileIA( )
+            // new RandomMoveSystem( ),
+            // new HostileIA( )
         ];
 
         const animate = () => {
@@ -243,6 +222,7 @@ export class Game {
                 }
 
                 tile.alphaAnimator.tick( deltaTime );
+
                 sprite.position.set(
                     worldPosition.x - this.context.camera.x,
                     worldPosition.y - this.context.camera.y
