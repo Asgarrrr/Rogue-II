@@ -39,7 +39,7 @@ and [Rot.js](https://ondras.github.io/rot.js/hp/). It is an evolution of my firs
 > in development, so expect bugs and unfinished features. Also, the game is not optimized for mobile devices. If you find
 > any bugs, please report them in the [issues](https://github.com/Asgarrrr/Rogue-II/issues/new) section.
 
-<img src="https://i.imghippo.com/files/M76aS1725979780.png" alt="game preview" width="100%">
+<img src="https://i.imghippo.com/files/n1O111725979890.png" alt="game preview" width="100%">
 
 > Yep, currently the game is only a 2D dungeon crawler with a few enemies and items.
 
